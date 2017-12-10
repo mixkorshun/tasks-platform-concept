@@ -4,8 +4,8 @@ import pytest
 from flask import url_for
 
 from project.db import get_db_connection
-from project.session import from_jwt_token
-from ..password import encode_password
+from project.users.password import encode_password
+from .. import tokens
 
 
 @pytest.fixture(name='load_users', scope="module")
@@ -32,7 +32,7 @@ def test_correct_login(load_users, client):
     )
 
     assert resp.status_code == 200
-    assert from_jwt_token(resp.json['token']).user_id == 1
+    assert tokens.decode(resp.json['token']).user_id == 1
 
 
 def test_incorrect_login(load_users, client):
