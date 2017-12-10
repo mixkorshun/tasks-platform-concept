@@ -11,7 +11,9 @@ load_dotenv(
 
 def setup():
     import importlib
-    import settings
+
+    from . import settings
+
     for app_name in settings.INSTALLED_APPS:
         importlib.import_module(app_name)
 

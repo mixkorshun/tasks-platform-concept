@@ -3,7 +3,7 @@ import os
 import sqlite3
 from urllib.parse import urlparse
 
-import settings
+from . import settings
 
 
 def connect_db(uri):
