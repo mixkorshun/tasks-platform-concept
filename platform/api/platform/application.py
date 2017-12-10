@@ -19,5 +19,3 @@ def setup():
 
 
 app = Flask(__name__)
-
-setup()
