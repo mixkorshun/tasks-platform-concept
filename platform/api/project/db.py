@@ -35,9 +35,11 @@ def apply_migrations():
     for app_name in settings.INSTALLED_APPS:
         m = importlib.import_module(app_name)
 
-        sql_script = open(os.path.join(
+        schema_filename = os.path.join(
             os.path.dirname(m.__file__),
             'schema', 'schema.sql'
-        ), 'r').read()
+        )
 
-        database.executescript(sql_script)
+        if os.path.exists(schema_filename):
+            sql_script = open(schema_filename, 'r').read()
+            database.executescript(sql_script)
