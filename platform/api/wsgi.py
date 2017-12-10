@@ -1,4 +1,4 @@
-from platform import app, setup
+from project import app, setup
 
 setup()
 

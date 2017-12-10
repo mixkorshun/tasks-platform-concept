@@ -1,19 +1,15 @@
-# noinspection PyUnresolvedReferences
 import os
 
-from dotenv import load_dotenv, find_dotenv
-from flask import Flask  # noqa:
-
-load_dotenv(
-    find_dotenv(os.environ.get('ENV_FILE', '.env'))
-)
+from flask import Flask
 
 
 def setup():
-    import importlib
+    from dotenv import load_dotenv, find_dotenv
+    load_dotenv(find_dotenv(os.environ.get('ENV_FILE', '.env')))
 
     from . import settings
 
+    import importlib
     for app_name in settings.INSTALLED_APPS:
         importlib.import_module(app_name)
 
