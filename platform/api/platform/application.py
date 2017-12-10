@@ -17,5 +17,8 @@ def setup():
     for app_name in settings.INSTALLED_APPS:
         importlib.import_module(app_name)
 
+    # noinspection PyUnresolvedReferences
+    from . import errors
+
 
 app = Flask(__name__)
