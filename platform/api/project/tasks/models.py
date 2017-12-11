@@ -30,8 +30,8 @@ def get_task_by_id(task_id):
     q = qb.make('select', __table__)
 
     qb.set_columns(q, __fields__)
-    qb.add_where(q, 'id = :id', {
-        'id': task_id
+    qb.add_where(q, '%(pk)s = :%(pk)s' % {'pk': __fields__[0]}, {
+        __fields__[0]: task_id
     })
 
     conn = database.get_connection()

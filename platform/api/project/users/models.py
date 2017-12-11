@@ -2,18 +2,20 @@ from project import database
 from project.utils import qb
 from .password import check_password
 
-user_fields = ('id', 'email', 'password', 'type')
+__table__ = 'users'
+
+__fields__ = ('id', 'email', 'password', 'type')
 
 
 def make_user(**kwargs):
     return {
         field: kwargs.get(field)
-        for field in user_fields
+        for field in __fields__
     }
 
 
 def make_user_from_row(row, fields=None):
-    fields = fields or user_fields
+    fields = fields or __fields__
 
     if row is not None:
         return make_user(**dict(zip(fields, row)))
@@ -24,8 +26,8 @@ def make_user_from_row(row, fields=None):
 def get_user_by_credentials(email, password):
     conn = database.get_connection()
 
-    q = qb.make('select', 'users')
-    qb.set_columns(q, user_fields)
+    q = qb.make('select', __table__)
+    qb.set_columns(q, __fields__)
     qb.add_where(q, 'email = :email', {
         'email': email
     })
@@ -43,10 +45,10 @@ def get_user_by_credentials(email, password):
 def get_user_by_id(user_id):
     conn = database.get_connection()
 
-    q = qb.make('select', 'users')
-    qb.set_columns(q, user_fields)
-    qb.add_where(q, 'id = :id', {
-        'id': user_id
+    q = qb.make('select', __table__)
+    qb.set_columns(q, __fields__)
+    qb.add_where(q, '%(pk)s = :%(pk)s' % {'pk': __fields__[0]}, {
+        __fields__[0]: user_id
     })
 
     result = conn.execute(*qb.to_sql(q))
@@ -55,11 +57,11 @@ def get_user_by_id(user_id):
 
 
 def update_user(user):
-    q = qb.make('update', 'users')
+    q = qb.make('update', __table__)
     qb.add_values(q, [
-        (field, ':' + field) for field in ('email', 'password', 'type')
+        (field, ':' + field) for field in __fields__[1:]
     ])
-    qb.add_where(q, 'id = :id')
+    qb.add_where(q, '%(pk)s = :%(pk)s' % {'pk': __fields__[0]})
     qb.add_params(q, user)
 
     conn = database.get_connection()
@@ -72,14 +74,14 @@ def update_user(user):
 
 
 def create_user(user):
-    q = qb.make('insert', 'users')
+    q = qb.make('insert', __table__)
 
     qb.add_values(q, [
-        (field, ':' + field) for field in ('email', 'password', 'type')
+        (field, ':' + field) for field in __fields__[1:]
     ])
 
-    if user['id']:
-        qb.add_values(q, ('id', ':id'))
+    if user[__fields__[0]]:
+        qb.add_values(q, (__fields__[0], ':' + __fields__[0]))
 
     qb.add_params(q, user)
 
@@ -89,6 +91,6 @@ def create_user(user):
     if not result.rowcount:
         raise RuntimeError('No users created.')
 
-    user['id'] = result.lastrowid
+    user[__fields__[0]] = result.lastrowid
 
     return user
