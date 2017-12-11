@@ -5,8 +5,10 @@ from urllib.parse import urlparse
 
 from . import settings
 
+connection = None
 
-def connect_db(uri):
+
+def connect(uri):
     uri = urlparse(uri)
 
     if uri.scheme == 'sqlite':
@@ -17,20 +19,17 @@ def connect_db(uri):
         raise NotImplementedError()
 
 
-db = None
+def get_connection():
+    global connection
+
+    if connection is None:
+        connection = connect(settings.DATABASE_URL)
+
+    return connection
 
 
-def get_db_connection():
-    global db
-
-    if db is None:
-        db = connect_db(settings.DATABASE_URL)
-
-    return db
-
-
-def apply_migrations():
-    database = get_db_connection()
+def migrate():
+    conn = get_connection()
 
     for app_name in settings.INSTALLED_APPS:
         m = importlib.import_module(app_name)
@@ -42,4 +41,4 @@ def apply_migrations():
 
         if os.path.exists(schema_filename):
             sql_script = open(schema_filename, 'r').read()
-            database.executescript(sql_script)
+            conn.executescript(sql_script)

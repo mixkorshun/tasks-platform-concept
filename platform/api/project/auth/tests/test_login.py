@@ -3,23 +3,19 @@ import json
 import pytest
 from flask import url_for
 
-from project.db import get_db_connection
+from project import database, queries
 from project.users.password import encode_password
 from .. import tokens
 
 
 @pytest.fixture(name='load_users', scope="module")
 def db_users():
-    query = '''
-INSERT INTO users(id, email, password, type) VALUES (
-  1, 'one@localhost', '%(qwerty_password)s', 'employee'
-);
-''' % {
-        'qwerty_password': encode_password('qwerty')
-    }
-    db = get_db_connection()
-
-    db.executescript(query)
+    queries.save_object(database.get_connection(), 'users', {
+        'id': 1,
+        'email': 'one@localhost',
+        'password': encode_password('qwerty'),
+        'type': 'employee',
+    }, force_create=True)
 
 
 def test_correct_login(load_users, client):

@@ -9,14 +9,14 @@ def pytest_configure(config):
     from project import setup
     setup()
 
-    from project.db import apply_migrations
-    apply_migrations()
+    from project import database
+    database.migrate()
 
 
 def pytest_runtest_setup():
-    from project.db import get_db_connection
+    from project import database
 
-    db = get_db_connection()
+    db = database.get_connection()
 
     result = db.execute(
         "SELECT `name` FROM sqlite_master WHERE type='table';"

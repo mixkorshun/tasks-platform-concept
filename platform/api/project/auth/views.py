@@ -3,7 +3,8 @@ import json
 from flask import request, jsonify
 
 from project import app
-from project.users.models import get_by_credentials, create_user, save_user
+from project.users.models import get_user_by_credentials, create_user, \
+    save_user
 from project.users.password import encode_password
 from . import tokens
 from .errors import InvalidCredentials
@@ -17,7 +18,7 @@ def authorize():
     email = post_data['email']
     password = post_data['password']
 
-    user = get_by_credentials(email, password)
+    user = get_user_by_credentials(email, password)
 
     if not user:
         raise InvalidCredentials()

@@ -3,17 +3,24 @@ from werkzeug.exceptions import NotFound
 
 from project import app
 from project.auth.shortcuts import only_authorized
-from project.users.models import get_by_id
+from .models import get_user_by_id
 
 
 @app.route('/users/me/', methods=['GET'])
 @only_authorized
-def profile():
-    user = get_by_id(request.session.user_id)
+def users_me():
+    return users_detail(request.session.user_id)
+
+
+@app.route('/users/<int:user_id>/', methods=['GET'])
+def users_detail(user_id):
+    user = get_user_by_id(user_id)
 
     if not user:
         raise NotFound(
-            'Current user not found in database.'
+            'User not found in database.'
         )
+
+    del user['password']
 
     return jsonify(user)

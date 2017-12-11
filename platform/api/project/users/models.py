@@ -1,21 +1,17 @@
-from sqlite3 import IntegrityError
-
-from project.db import get_db_connection
+from project import database, queries
 from .password import check_password
 
 user_fields = ('id', 'email', 'password', 'type')
 
 
 def create_user(**kwargs):
-    user = {
-        field: None for field in user_fields
+    return {
+        field: kwargs.get(field)
+        for field in user_fields
     }
 
-    user.update(kwargs)
-    return user
 
-
-def create_user_from_row(row, fields=None):
+def user_from_row(row, fields=None):
     fields = fields or user_fields
 
     if row is not None:
@@ -24,65 +20,37 @@ def create_user_from_row(row, fields=None):
     return None
 
 
-def get_by_credentials(email, password):
-    db = get_db_connection()
+def get_user_by_credentials(email, password):
+    db = database.get_connection()
 
-    query = 'SELECT %(fields)s FROM users WHERE email = ?' % {
-        'fields': ', '.join(user_fields)
-    }
+    row = next(queries.select_objects(
+        db, 'users',
+        ('email = ?', (email,)),
+        fields=user_fields, limit=1
+    ), None)
 
-    result = db.execute(query, [email])
-
-    user = create_user_from_row(result.fetchone())
-    if user is not None and not check_password(password, user['password']):
+    user = user_from_row(row)
+    if row is not None and not check_password(password, user['password']):
         return None
 
     return user
 
 
-def get_by_id(user_id):
-    db = get_db_connection()
+def get_user_by_id(user_id):
+    db = database.get_connection()
 
-    query = 'SELECT %(fields)s FROM users WHERE id = :id' % {
-        'fields': ', '.join(user_fields)
-    }
+    row = queries.get_object_by_pk(
+        db, 'users',
+        user_id,
+        fields=user_fields
+    )
 
-    result = db.execute(query, {
-        'id': user_id
-    })
-
-    return create_user_from_row(result.fetchone())
+    return user_from_row(row)
 
 
 def save_user(user, force_create=False):
-    db = get_db_connection()
-
-    update_fields = ('email', 'password', 'type')
-
-    if user['id'] and not force_create:
-        set_statements = ', '.join(
-            '%s = :%s' % (x, x) for x in update_fields
-        )
-
-        query = 'UPDATE users SET ' + set_statements + ' WHERE id = :id;'
-    else:
-        if user['id']:
-            update_fields += ('id',)
-
-        columns = ', '.join(update_fields)
-        values = ', '.join(':' + f for f in update_fields)
-
-        query = 'INSERT INTO users(%(columns)s) VALUES (%(values)s);' % {
-            'columns': columns,
-            'values': values
-        }
-
-    try:
-        result = db.execute(query, user)
-    except IntegrityError:
-        pass
-
-    if result.rowcount == 0:
-        raise RuntimeError('User not saved.')
-
-    return result.lastrowid
+    db = database.get_connection()
+    return queries.save_object(
+        db, 'users',
+        user, force_create=force_create
+    )

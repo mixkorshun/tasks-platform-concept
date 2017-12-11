@@ -1,8 +1,6 @@
 import pytest
 from flask import url_for
 
-from project.auth import tokens
-from project.auth.models import Store
 from ..models import save_user
 
 
@@ -32,21 +30,17 @@ def user_employer():
     return user
 
 
-def test_get_not_authenticated(client):
-    resp = client.get(url_for('users_me'))
-
-    assert resp.status_code == 403
-    assert resp.json['error_code'] == 'not_allowed'
-
-
-def test_get_profile(client, employee):
-    resp = client.get(url_for('users_me'), headers=[
-        ('Authorization', 'Token ' + tokens.encode(Store(
-            user_id=employee['id']
-        )))
-    ])
+def test_get_user(client, employee):
+    resp = client.get(url_for('users_detail', user_id=employee['id']))
 
     assert resp.status_code == 200
     assert resp.json['id'] == employee['id']
     assert resp.json['email'] == employee['email']
     assert resp.json['type'] == employee['type']
+
+
+def test_get_not_existent_user(client):
+    resp = client.get(url_for('users_detail', user_id=1))
+
+    assert resp.status_code == 404
+    assert resp.json['error_code'] == 'not_found'
