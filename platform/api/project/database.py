@@ -13,7 +13,7 @@ def connect(uri):
 
     if uri.scheme == 'sqlite':
         return sqlite3.connect(
-            uri.path
+            uri.netloc + uri.path
         )
     else:
         raise NotImplementedError()
