@@ -20,12 +20,12 @@ def get_authorization_token(req):
 def before_request():
     token = get_authorization_token(request)
 
-    store = None
+    user_id = None
 
     if token:
         try:
-            store = tokens.decode(token)
+            user_id = tokens.get_user_id(token)
         except tokens.DecodeError:
             pass
 
-    setattr(request, 'session', store)
+    setattr(request, 'user_id', user_id)

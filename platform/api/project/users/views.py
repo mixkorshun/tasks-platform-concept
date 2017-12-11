@@ -9,7 +9,7 @@ from .models import get_user_by_id
 @app.route('/users/me/', methods=['GET'])
 @only_authorized
 def users_me():
-    return users_detail(request.session.user_id)
+    return users_detail(request.user_id)
 
 
 @app.route('/users/<int:user_id>/', methods=['GET'])

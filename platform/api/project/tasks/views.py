@@ -35,7 +35,7 @@ def tasks_list():
 
         return jsonify(list(tasks))
     elif request.method == 'POST':
-        if not request.session:
+        if not request.user_id:
             raise Forbidden()
 
         post_data = json.loads(request.data.decode())
@@ -54,7 +54,7 @@ def tasks_list():
             description=description,
             price=price,
 
-            employer_id=request.session.user_id,
+            employer_id=request.user_id,
             status='open',
         ))
 

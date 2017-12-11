@@ -1,13 +1,12 @@
 from flask import request
 
 from .. import tokens
-from ..models import Store
 
 
 def test_forbidden_when_no_header(client):
     client.get('/', headers=[])
 
-    assert request.session is None
+    assert request.user_id is None
 
 
 def test_forbidden_when_invalid_type(client):
@@ -15,7 +14,7 @@ def test_forbidden_when_invalid_type(client):
         ('Authorization', 'basic abacaba:abacaba')
     ])
 
-    assert request.session is None
+    assert request.user_id is None
 
 
 def test_forbidden_when_empty_token(client):
@@ -23,7 +22,7 @@ def test_forbidden_when_empty_token(client):
         ('Authorization', 'Token')
     ])
 
-    assert request.session is None
+    assert request.user_id is None
 
 
 def test_forbidden_when_invalid_token(client):
@@ -31,14 +30,14 @@ def test_forbidden_when_invalid_token(client):
         ('Authorization', 'Token abacaba')
     ])
 
-    assert request.session is None
+    assert request.user_id is None
 
 
 def test_valid_token(client):
-    token = tokens.encode(Store(user_id=12))
+    token = tokens.get_token(12)
 
     client.get('/', headers=[
         ('Authorization', 'Token %s' % token)
     ])
 
-    assert request.session.user_id == 12
+    assert request.user_id == 12

@@ -28,7 +28,7 @@ def test_correct_login(user, client):
     )
 
     assert resp.status_code == 200
-    assert tokens.decode(resp.json['token']).user_id == 1
+    assert tokens.get_user_id(resp.json['token']) == 1
 
 
 def test_incorrect_login(user, client):

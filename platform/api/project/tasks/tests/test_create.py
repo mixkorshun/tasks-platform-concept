@@ -4,7 +4,6 @@ import pytest
 from flask import url_for
 
 from project.auth import tokens
-from project.auth.models import Store
 from project.users.models import create_user
 
 
@@ -31,9 +30,7 @@ def test_create_task(client, employer):
         'description': 'My first task',
         'price': 200,
     }), headers=[
-        ('Authorization', 'Token ' + tokens.encode(Store(
-            user_id=employer['id']
-        )))
+        ('Authorization', 'Token ' + tokens.get_token(employer['id']))
     ])
 
     assert resp.status_code == 201
@@ -49,9 +46,7 @@ def test_create_minimal_params(client, employer):
     resp = client.post(url_for('tasks_list'), data=json.dumps({
         'name': 'Task 1'
     }), headers=[
-        ('Authorization', 'Token ' + tokens.encode(Store(
-            user_id=employer['id']
-        )))
+        ('Authorization', 'Token ' + tokens.get_token(employer['id']))
     ])
 
     assert resp.status_code == 201
@@ -63,9 +58,7 @@ def test_create_minimal_params(client, employer):
 
 def test_create_missing_name(client, employer):
     resp = client.post(url_for('tasks_list'), data=json.dumps({}), headers=[
-        ('Authorization', 'Token ' + tokens.encode(Store(
-            user_id=employer['id']
-        )))
+        ('Authorization', 'Token ' + tokens.get_token(employer['id']))
     ])
 
     assert resp.status_code == 400

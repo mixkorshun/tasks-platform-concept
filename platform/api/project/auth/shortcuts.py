@@ -7,7 +7,7 @@ from werkzeug.exceptions import Forbidden
 def only_authorized(view):
     @wraps(view)
     def inner(*args, **kwargs):
-        if not request.session or not request.session.user_id:
+        if not request.user_id:
             raise Forbidden(
                 'Missed or invalid `Authorization` header.'
             )

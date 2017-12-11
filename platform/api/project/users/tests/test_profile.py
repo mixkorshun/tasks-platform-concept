@@ -2,7 +2,6 @@ import pytest
 from flask import url_for
 
 from project.auth import tokens
-from project.auth.models import Store
 from project.users.models import create_user
 
 
@@ -25,9 +24,7 @@ def test_get_not_authenticated(client):
 
 def test_get_profile(client, employee):
     resp = client.get(url_for('users_me'), headers=[
-        ('Authorization', 'Token ' + tokens.encode(Store(
-            user_id=employee['id']
-        )))
+        ('Authorization', 'Token ' + tokens.get_token(employee['id']))
     ])
 
     assert resp.status_code == 200

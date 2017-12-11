@@ -8,7 +8,6 @@ from project.users.models import get_user_by_credentials, make_user, \
 from project.users.password import encode_password
 from . import tokens
 from .errors import InvalidCredentials
-from .models import Store
 
 
 @app.route('/authorize/', methods=['POST'])
@@ -23,10 +22,7 @@ def authorize():
     if not user:
         raise InvalidCredentials()
 
-    token = tokens.encode(
-        Store(
-            user_id=user['id']
-        ))
+    token = tokens.get_token(user['id'])
 
     return jsonify({
         'token': token
