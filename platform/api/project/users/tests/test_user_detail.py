@@ -1,33 +1,17 @@
 import pytest
 from flask import url_for
 
-from ..models import save_user
+from ..models import create_user
 
 
 @pytest.fixture(name='employee')
 def user_employee():
-    user = {
+    return create_user({
         'id': 1,
         'email': 'employee@localhost',
         'password': '---',
         'type': 'employee'
-    }
-    save_user(user, force_create=True)
-
-    return user
-
-
-@pytest.fixture(name='employer')
-def user_employer():
-    user = {
-        'id': 2,
-        'email': 'employer@localhost',
-        'password': '---',
-        'type': 'employer'
-    }
-    save_user(user, force_create=True)
-
-    return user
+    })
 
 
 def test_get_user(client, employee):

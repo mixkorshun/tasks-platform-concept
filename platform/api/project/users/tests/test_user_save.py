@@ -1,53 +1,48 @@
 import pytest
 
-from ..models import save_user
+from ..models import create_user, update_user
 
 
 def test_create_user():
-    user_id = save_user({
+    user = create_user({
         'id': None,
         'email': 'john@localhost',
         'password': '---',
         'type': 'employee'
     })
 
-    assert user_id > 0
+    assert user['id'] > 0
 
 
-def test_force_create_user():
-    user_id = save_user({
+def test_create_user_with_id():
+    user = create_user({
         'id': 12,
         'email': 'john@localhost',
         'password': '---',
         'type': 'employee'
-    }, force_create=True)
+    })
 
-    assert user_id == 12
+    assert user['id'] == 12
 
 
 def test_update_user():
-    user_id = save_user({
+    user = create_user({
         'id': None,
         'email': 'john@localhost',
         'password': '---',
         'type': 'employee'
     })
 
-    user = {
-        'id': user_id,
-        'email': 'john@localhost',
-        'password': '---',
-        'type': 'employee'
-    }
+    insert_id = user['id']
 
-    user_id = save_user(user)
+    update_id = update_user(user)['id']
 
-    assert user_id == user['id']
+    assert update_id == insert_id
 
 
 def test_update_non_existent_user():
     with pytest.raises(RuntimeError):
-        save_user({
+        update_user({
             'id': 1,
             'email': 'john@localhost',
             'password': '---',

@@ -3,26 +3,26 @@ import json
 import pytest
 from flask import url_for
 
-from project import database, queries
+from project.users.models import create_user
 from project.users.password import encode_password
 from .. import tokens
 
 
-@pytest.fixture(name='load_users', scope="module")
-def db_users():
-    queries.save_object(database.get_connection(), 'users', {
+@pytest.fixture(name='user')
+def fixture_user():
+    return create_user({
         'id': 1,
         'email': 'one@localhost',
         'password': encode_password('qwerty'),
         'type': 'employee',
-    }, force_create=True)
+    })
 
 
-def test_correct_login(load_users, client):
+def test_correct_login(user, client):
     resp = client.post(
         url_for('authorize'),
         data=json.dumps({
-            'email': 'one@localhost',
+            'email': user['email'],
             'password': 'qwerty'
         })
     )
@@ -31,7 +31,7 @@ def test_correct_login(load_users, client):
     assert tokens.decode(resp.json['token']).user_id == 1
 
 
-def test_incorrect_login(load_users, client):
+def test_incorrect_login(user, client):
     resp = client.post(
         url_for('authorize'),
         data=json.dumps({
@@ -44,11 +44,11 @@ def test_incorrect_login(load_users, client):
     assert resp.json['error_code'] == 'invalid_credentials'
 
 
-def test_incorrect_password(load_users, client):
+def test_incorrect_password(user, client):
     resp = client.post(
         url_for('authorize'),
         data=json.dumps({
-            'email': 'one@localhost',
+            'email': user['email'],
             'password': 'qwerty1234'
         })
     )

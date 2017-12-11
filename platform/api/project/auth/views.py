@@ -3,8 +3,8 @@ import json
 from flask import request, jsonify
 
 from project import app
-from project.users.models import get_user_by_credentials, create_user, \
-    save_user
+from project.users.models import get_user_by_credentials, make_user, \
+    create_user
 from project.users.password import encode_password
 from . import tokens
 from .errors import InvalidCredentials
@@ -41,13 +41,11 @@ def register():
     password = post_data['password']
     user_type = post_data['type']
 
-    user = create_user(
+    user = create_user(make_user(
         email=email,
         password=encode_password(password),
         type=user_type
-    )
-
-    save_user(user)
+    ))
 
     del user['password']
 
