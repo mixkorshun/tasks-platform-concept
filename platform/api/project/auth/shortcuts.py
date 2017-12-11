@@ -5,7 +5,7 @@ from werkzeug.exceptions import Forbidden
 
 
 def only_authorized(view):
-    @wraps
+    @wraps(view)
     def inner(*args, **kwargs):
         if not request.session or not request.session.user_id:
             raise Forbidden(

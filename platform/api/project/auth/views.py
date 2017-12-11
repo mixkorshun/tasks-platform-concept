@@ -23,7 +23,7 @@ def authorize():
 
     token = tokens.encode(
         Store(
-            user_id=user.id
+            user_id=user['id']
         ))
 
     return jsonify({

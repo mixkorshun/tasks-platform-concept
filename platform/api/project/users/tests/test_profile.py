@@ -1,0 +1,52 @@
+import pytest
+from flask import url_for
+
+from project.auth import tokens
+from project.auth.models import Store
+from ..models import save_user
+
+
+@pytest.fixture(name='employee')
+def user_employee():
+    user = {
+        'id': 1,
+        'email': 'employee@localhost',
+        'password': '---',
+        'type': 'employee'
+    }
+    save_user(user, force_create=True)
+
+    return user
+
+
+@pytest.fixture(name='employer')
+def user_employer():
+    user = {
+        'id': 2,
+        'email': 'employer@localhost',
+        'password': '---',
+        'type': 'employer'
+    }
+    save_user(user, force_create=True)
+
+    return user
+
+
+def test_get_not_authenticated(client):
+    resp = client.get(url_for('profile'))
+
+    assert resp.status_code == 403
+    assert resp.json['error_code'] == 'not_allowed'
+
+
+def test_get_profile(client, employee):
+    resp = client.get(url_for('profile'), headers=[
+        ('Authorization', 'Token ' + tokens.encode(Store(
+            user_id=employee['id']
+        )))
+    ])
+
+    assert resp.status_code == 200
+    assert resp.json['id'] == employee['id']
+    assert resp.json['email'] == employee['email']
+    assert resp.json['type'] == employee['type']
