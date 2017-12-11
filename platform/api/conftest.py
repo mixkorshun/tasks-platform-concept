@@ -13,6 +13,19 @@ def pytest_configure(config):
     apply_migrations()
 
 
+def pytest_runtest_setup():
+    from project.db import get_db_connection
+
+    db = get_db_connection()
+
+    result = db.execute(
+        "SELECT `name` FROM sqlite_master WHERE type='table';"
+    )
+
+    for name, in result.fetchall():
+        db.execute('DELETE FROM %s' % name)
+
+
 @pytest.fixture
 def app():
     from project import app
