@@ -3,7 +3,8 @@ import json
 from flask import request, jsonify
 
 from project import app
-from project.users.models import get_by_credentials
+from project.users.models import get_by_credentials, create_user, save_user
+from project.users.password import encode_password
 from . import tokens
 from .errors import InvalidCredentials
 from .models import Store
@@ -29,6 +30,27 @@ def authorize():
     return jsonify({
         'token': token
     })
+
+
+@app.route('/register/', methods=['POST'])
+def register():
+    post_data = json.loads(request.data.decode())
+
+    email = post_data['email']
+    password = post_data['password']
+    user_type = post_data['type']
+
+    user = create_user(
+        email=email,
+        password=encode_password(password),
+        type=user_type
+    )
+
+    save_user(user)
+
+    del user['password']
+
+    return jsonify(user)
 
 
 @app.errorhandler(InvalidCredentials)
