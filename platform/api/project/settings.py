@@ -7,6 +7,7 @@ SECRET_KEY = os.environ['SECRET_KEY']
 INSTALLED_APPS = [
     'project.users',
     'project.auth',
+    'project.tasks',
 ]
 
 DATABASE_URL = os.environ.get(
