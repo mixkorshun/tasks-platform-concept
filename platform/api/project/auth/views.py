@@ -1,6 +1,7 @@
 import json
 
 from flask import request, jsonify
+from werkzeug.exceptions import BadRequest
 
 from project import app
 from project.users.models import get_user_by_credentials, make_user, \
@@ -14,8 +15,13 @@ from .errors import InvalidCredentials
 def authorize():
     post_data = json.loads(request.data.decode())
 
-    email = post_data['email']
-    password = post_data['password']
+    try:
+        email = post_data['email']
+        password = post_data['password']
+    except KeyError:
+        raise BadRequest(
+            'Please provide email/password pair.'
+        )
 
     user = get_user_by_credentials(email, password)
 
@@ -33,9 +39,12 @@ def authorize():
 def register():
     post_data = json.loads(request.data.decode())
 
-    email = post_data['email']
-    password = post_data['password']
-    user_type = post_data['type']
+    try:
+        email = post_data['email']
+        password = post_data['password']
+        user_type = post_data['type']
+    except KeyError:
+        raise BadRequest('One or more required field are missed.')
 
     user = create_user(make_user(
         email=email,
