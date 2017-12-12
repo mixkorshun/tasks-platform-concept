@@ -1,10 +1,13 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import Application from './containers/App.jsx';
+import Application from './containers/Application';
 
-import '@blueprintjs/core/dist/blueprint.css';
+import 'antd/dist/antd.css';
+import { HashRouter } from 'react-router-dom';
 
 ReactDOM.render(
-  <Application />,
-  document.getElementById('root')
+  <HashRouter>
+    <Application />
+  </HashRouter>,
+  document.getElementById('root'),
 );
