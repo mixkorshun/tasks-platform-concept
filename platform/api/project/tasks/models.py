@@ -30,14 +30,17 @@ def get_task_by_id(task_id):
     q = qb.make('select', __table__)
 
     qb.set_columns(q, __fields__)
-    qb.add_where(q, '%(pk)s = :%(pk)s' % {'pk': __fields__[0]}, {
+    qb.add_where(q, '%(pk)s = {%(pk)s}' % {'pk': __fields__[0]}, {
         __fields__[0]: task_id
     })
 
     conn = database.get_connection()
-    result = conn.execute(*qb.to_sql(q))
 
-    return make_task_from_row(result.fetchone())
+    cursor = conn.cursor()
+    sql, params = qb.to_sql(q)
+    cursor.execute(database.prepare_query(conn, sql), params)
+
+    return make_task_from_row(cursor.fetchone())
 
 
 def select_tasks(query):
@@ -50,10 +53,12 @@ def select_tasks(query):
         query, params = query, {}
 
     conn = database.get_connection()
-    result = conn.execute(query, params)
+
+    cursor = conn.cursor()
+    cursor.execute(database.prepare_query(conn, query), params)
 
     while True:
-        row = result.fetchone()
+        row = cursor.fetchone()
 
         if row is None:
             return
@@ -64,17 +69,20 @@ def select_tasks(query):
 def update_task(task):
     q = qb.make('update', __table__)
     qb.add_values(q, [
-        (field, ':' + field) for field in __fields__[1:]
+        (field, '{%s}' % field) for field in __fields__[1:]
     ])
-    qb.add_where(q, '%(pk)s = :%(pk)s' % {
+    qb.add_where(q, '%(pk)s = {%(pk)s}' % {
         'pk': __fields__[0]
     })
     qb.add_params(q, task)
 
     conn = database.get_connection()
-    result = conn.execute(*qb.to_sql(q))
 
-    if not result.rowcount:
+    cursor = conn.cursor()
+    sql, params = qb.to_sql(q)
+    cursor.execute(database.prepare_query(conn, sql), params)
+
+    if not cursor.rowcount:
         raise RuntimeError('No tasks updated.')
 
     return task
@@ -84,20 +92,23 @@ def create_task(task):
     q = qb.make('insert', __table__)
 
     qb.add_values(q, [
-        (field, ':' + field) for field in __fields__[1:]
+        (field, '{%s}' % field) for field in __fields__[1:]
     ])
 
     if task[__fields__[0]]:
-        qb.add_values(q, (__fields__[0], ':' + __fields__[0]))
+        qb.add_values(q, (__fields__[0], '{' + __fields__[0] + '}'))
 
     qb.add_params(q, task)
 
     conn = database.get_connection()
-    result = conn.execute(*qb.to_sql(q))
 
-    if not result.rowcount:
+    cursor = conn.cursor()
+    sql, params = qb.to_sql(q)
+    cursor.execute(database.prepare_query(conn, sql), params)
+
+    if not cursor.rowcount:
         raise RuntimeError('No tasks created.')
 
-    task[__fields__[0]] = result.lastrowid
+    task[__fields__[0]] = cursor.lastrowid
 
     return task

@@ -21,13 +21,13 @@ def tasks_list():
         qb.add_ordering(q, ('id', 'DESC'))
 
         if last_id > 0:
-            qb.add_where(q, 'id < :last_id', {
+            qb.add_where(q, 'id < {last_id}', {
                 'last_id': last_id
             })
         qb.set_limit(q, limit)
 
         if status:
-            qb.add_where(q, 'status = :status', {
+            qb.add_where(q, 'status = {status}', {
                 'status': status
             })
 
