@@ -18,14 +18,14 @@ def employer_fixture():
 
 
 def test_get_not_authenticated(client):
-    resp = client.post(url_for('tasks_list'))
+    resp = client.post(url_for('tasks_create'))
 
     assert resp.status_code == 403
     assert resp.json['error_code'] == 'not_allowed'
 
 
 def test_create_task(client, employer):
-    resp = client.post(url_for('tasks_list'), data=json.dumps({
+    resp = client.post(url_for('tasks_create'), data=json.dumps({
         'name': 'Task 1',
         'description': 'My first task',
         'price': 200,
@@ -43,7 +43,7 @@ def test_create_task(client, employer):
 
 
 def test_create_minimal_params(client, employer):
-    resp = client.post(url_for('tasks_list'), data=json.dumps({
+    resp = client.post(url_for('tasks_create'), data=json.dumps({
         'name': 'Task 1'
     }), headers=[
         ('Authorization', 'Token ' + tokens.get_token(employer['id']))
@@ -57,7 +57,7 @@ def test_create_minimal_params(client, employer):
 
 
 def test_create_missing_name(client, employer):
-    resp = client.post(url_for('tasks_list'), data=json.dumps({}), headers=[
+    resp = client.post(url_for('tasks_create'), data=json.dumps({}), headers=[
         ('Authorization', 'Token ' + tokens.get_token(employer['id']))
     ])
 

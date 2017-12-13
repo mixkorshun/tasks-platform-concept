@@ -11,62 +11,62 @@ from .models import select_tasks, make_task, create_task, \
     get_task_by_id, update_tasks
 
 
-@app.route('/tasks/', methods=['GET', 'POST'])
+@app.route('/tasks/', methods=['POST'])
 @only_authorized
-def tasks_list():
-    if request.method == 'GET':
-        last_id = request.args.get('last_id', -1, int)
-        limit = min(request.args.get('limit', 20, int), 1000)
-
-        q = qb.make('select')
-        qb.add_ordering(q, ('id', 'DESC'))
-
-        if last_id > 0:
-            qb.add_where(q, 'id < {last_id}', {
-                'last_id': last_id
-            })
-        qb.set_limit(q, limit)
-
-        qb.add_where(q, 'employee_id IS NULL')
-        qb.add_where(q, 'status = "open"')
-
-        tasks = select_tasks(q)
-
-        return jsonify(list(tasks))
-    elif request.method == 'POST':
-        user = get_user_by_id(request.user_id)
-        if user['type'] != 'employer':
-            raise Forbidden(
-                'Sorry, you cannot create new tasks.'
-            )
-
-        post_data = json.loads(request.data.decode())
-
-        try:
-            name = post_data['name']
-            description = post_data.get('description', '')
-            price = post_data.get('price')
-        except KeyError:
-            raise BadRequest(
-                'Missing one of following required params: (name,)'
-            )
-
-        task = create_task(make_task(
-            name=name,
-            description=description,
-            price=price,
-
-            author_id=request.user_id,
-            status='open',
-        ))
-
-        response = jsonify(task)
-        response.status_code = 201
-        response.headers['Location'] = url_for(
-            'tasks_detail', task_id=task['id']
+def tasks_create():
+    user = get_user_by_id(request.user_id)
+    if user['type'] != 'employer':
+        raise Forbidden(
+            'Sorry, you cannot create new tasks.'
         )
 
-        return response
+    post_data = json.loads(request.data.decode())
+
+    try:
+        name = post_data['name']
+        description = post_data.get('description', '')
+        price = post_data.get('price')
+    except KeyError:
+        raise BadRequest(
+            'Missing one of following required params: (name,)'
+        )
+
+    task = create_task(make_task(
+        name=name,
+        description=description,
+        price=price,
+
+        author_id=request.user_id,
+        status='open',
+    ))
+
+    response = jsonify(task)
+    response.status_code = 201
+
+    return response
+
+
+@app.route('/tasks/unassigned/', methods=['GET'])
+@only_authorized
+def tasks_list_unassigned():
+    last_id = request.args.get('last_id', -1, int)
+    limit = min(request.args.get('limit', 20, int), 1000)
+
+    q = qb.make('select')
+    qb.add_ordering(q, ('id', 'DESC'))
+
+    if last_id > 0:
+        qb.add_where(q, 'id < {last_id}', {
+            'last_id': last_id
+        })
+    qb.set_limit(q, limit)
+
+    qb.add_where(q, 'employee_id IS NULL')
+    qb.add_where(q, 'status = "open"')
+
+    tasks = select_tasks(q)
+
+    return jsonify(list(tasks))
 
 
 @app.route('/tasks/<int:task_id>/assign/', methods=['POST'])
