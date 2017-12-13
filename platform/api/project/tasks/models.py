@@ -5,7 +5,7 @@ __table__ = 'tasks'
 
 __fields__ = (
     'id',
-    'employer_id', 'employee_id',
+    'author_id', 'employee_id',
     'name',
     'status',
     'price',

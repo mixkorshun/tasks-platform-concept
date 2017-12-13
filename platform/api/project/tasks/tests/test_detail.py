@@ -21,7 +21,7 @@ def task_fixture(employer):
         'id': 1,
         'name': 'Sample task',
         'price': 300,
-        'employer_id': employer['id'],
+        'author_id': employer['id'],
         'description': 'My first example task',
         'status': 'open'
     }))

@@ -34,7 +34,7 @@ def tasks_fixture(employer):
             'id': i + 1,
             'name': 'Task %d' % (i + 1),
             'price': 300,
-            'employer_id': employer['id'],
+            'author_id': employer['id'],
             'description': '',
             'status': 'open'
         })))

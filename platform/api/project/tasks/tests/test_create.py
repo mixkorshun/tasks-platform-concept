@@ -38,7 +38,7 @@ def test_create_task(client, employer):
     assert resp.json['name'] == 'Task 1'
     assert resp.json['price'] == 200
     assert resp.json['description'] == 'My first task'
-    assert resp.json['employer_id'] == employer['id']
+    assert resp.json['author_id'] == employer['id']
     assert resp.json['status'] == 'open'
 
 
