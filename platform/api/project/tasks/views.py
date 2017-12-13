@@ -69,16 +69,6 @@ def tasks_list():
         return response
 
 
-@app.route('/tasks/<int:task_id>/', methods=['GET'])
-def tasks_detail(task_id):
-    task = get_task_by_id(task_id)
-
-    if not task:
-        raise NotFound('Task not found.')
-
-    return jsonify(task)
-
-
 @app.route('/tasks/<int:task_id>/assign/', methods=['POST'])
 @only_authorized
 def tasks_assign(task_id):
