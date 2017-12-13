@@ -1,10 +1,13 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const webpack = require('webpack');
 
-module.exports = {
+const isProduction = (process.env.NODE_ENV === 'production');
+
+let config = {
   context: path.resolve(__dirname, 'src'),
   entry: {
-    index: './index.js',
+    index: ['babel-polyfill', './index.js'],
   },
   output: {
     path: path.resolve(__dirname, 'dist'),
@@ -22,7 +25,7 @@ module.exports = {
         loader: 'babel-loader',
         exclude: /node_modules/,
         query: {
-          presets: ['react', 'es2015'],
+          presets: ['react', 'es2015', 'es2017'],
           plugins: ['transform-class-properties'],
         },
       },
@@ -44,3 +47,14 @@ module.exports = {
   ],
 };
 
+if (isProduction) {
+  config['plugins'].push(
+    new webpack.optimize.UglifyJsPlugin({
+      sourceMap: true,
+      compress: { warnings: false },
+      output: { comments: false },
+    }),
+  );
+}
+
+module.exports = config;

@@ -1,13 +1,29 @@
 import React from 'react';
 import TaskList from '../components/Tasks/TaskList';
+import { Col, Row } from 'antd';
 
 export default class IndexPage extends React.Component {
   render() {
     return (
-      <TaskList
-        forUser={this.props.user}
-        authorization={this.props.authorization}
-      />
+      <Row>
+        <Col span={8}>
+          <h2>Assigned to me</h2>
+          <TaskList
+            forUser={this.props.user}
+            authorization={this.props.authorization}
+          />
+        </Col>
+
+        <Col offset={2} span={12}>
+          <h2>Unassigned</h2>
+          <TaskList
+            forUser={this.props.user}
+            authorization={this.props.authorization}
+          />
+        </Col>
+
+      </Row>
+
     );
   }
 }

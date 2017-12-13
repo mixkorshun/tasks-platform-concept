@@ -63,9 +63,7 @@ export default class AuthorizedLayout extends React.Component {
               minHeight: 480,
             }}
           >
-            <div style={{ maxWidth: 800, margin: 'auto' }}>
-              {this.props.children}
-            </div>
+            {this.props.children}
           </Content>
         </Layout>
       </Layout>

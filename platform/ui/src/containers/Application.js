@@ -5,30 +5,10 @@ import IndexPage from './IndexPage';
 import Cookies from 'universal-cookie';
 import { request } from '../utils';
 import { message } from 'antd';
-import AuthorizedLayout from '../components/AuthorizedLayout/index';
+import AuthorizedLayout from '../components/AuthorizedLayout';
+import EnsureLoggedIn from '../components/EnsureLoggedIn';
 
 const cookies = new Cookies();
-
-class EnsureLoggedIn extends React.Component {
-
-  componentDidMount() {
-    const { dispatch, currentURL } = this.props;
-
-    if (!this.props.isAuthorized) {
-      this.props.history.push('/login/');
-    }
-  }
-
-  render() {
-    if (this.props.isAuthorized) {
-      return this.props.children;
-    } else {
-      return null;
-    }
-  }
-}
-
-EnsureLoggedIn = withRouter(EnsureLoggedIn);
 
 class Application extends React.Component {
   constructor(props) {
@@ -109,9 +89,15 @@ class Application extends React.Component {
           <LoginPage onLogin={this.handleLogin} />
         </Route>
         <EnsureLoggedIn isAuthorized={this.state.token}>
-          <AuthorizedLayout user={this.state.user} onLogout={this.handleLogout}>
+          <AuthorizedLayout
+            user={this.state.user}
+            onLogout={this.handleLogout}
+          >
             <Route path="/">
-              <IndexPage authorization={this.state.token} user={this.state.user} />
+              <IndexPage
+                authorization={this.state.token}
+                user={this.state.user}
+              />
             </Route>
           </AuthorizedLayout>
         </EnsureLoggedIn>
@@ -120,6 +106,4 @@ class Application extends React.Component {
   }
 }
 
-Application = withRouter(Application);
-
-export default Application;
+export default withRouter(Application);
