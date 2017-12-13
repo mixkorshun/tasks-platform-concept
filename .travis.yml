@@ -4,6 +4,8 @@ python:
   - '3.5'
 
 script:
-  - pip install -r api/requirements.txt
   - pip -q install -r api/test_requirements.txt
+  - flake8 api/
+
+  - pip install -r api/requirements.txt
   - pytest api/

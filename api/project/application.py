@@ -14,7 +14,7 @@ def setup():
         importlib.import_module(app_name)
 
     # noinspection PyUnresolvedReferences
-    from . import errors
+    from . import errors  # noqa: F401
 
 
 app = Flask(__name__)

@@ -60,9 +60,9 @@ def prepare_query(conn, sql):
     platform = get_platform(conn)
 
     if platform == 'sqlite':
-        format_param = lambda x: ':' + x
+        format_param = lambda x: ':' + x  # noqa: E731
     elif platform == 'mysql':
-        format_param = lambda x: '%(' + x + ')s'
+        format_param = lambda x: '%(' + x + ')s'  # noqa: E731
     else:
         raise NotImplementedError()
 

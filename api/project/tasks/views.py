@@ -1,6 +1,6 @@
 import json
 
-from flask import request, jsonify, url_for
+from flask import request, jsonify
 from werkzeug.exceptions import NotFound, BadRequest, Forbidden
 
 from project import app

@@ -1,1 +1,1 @@
-from . import middleware, views
+from . import middleware, views  # noqa: F401

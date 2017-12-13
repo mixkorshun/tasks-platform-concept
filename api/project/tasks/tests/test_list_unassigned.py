@@ -62,9 +62,11 @@ def test_tasks_list_limit(tasks, client, employee):
 
 
 def test_tasks_list_from_last_id(tasks, client, employee):
-    resp = client.get(url_for('tasks_list_unassigned') + "?last_id=5", headers=[
-        ('Authorization', 'Token ' + get_token(employee['id']))
-    ])
+    resp = client.get(url_for('tasks_list_unassigned') + "?last_id=5",
+                      headers=[
+                          ('Authorization',
+                           'Token ' + get_token(employee['id']))
+                      ])
 
     assert resp.status_code == 200
     assert len(resp.json) == 4
