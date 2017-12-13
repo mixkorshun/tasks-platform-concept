@@ -9,6 +9,7 @@ export default class IndexPage extends React.Component {
         <Col span={8}>
           <h2>Assigned to me</h2>
           <TaskList
+            feedUrl="/tasks/my/"
             forUser={this.props.user}
             authorization={this.props.authorization}
           />
@@ -17,6 +18,7 @@ export default class IndexPage extends React.Component {
         <Col offset={2} span={12}>
           <h2>Unassigned</h2>
           <TaskList
+            feedUrl='/tasks/unassigned/'
             forUser={this.props.user}
             authorization={this.props.authorization}
           />

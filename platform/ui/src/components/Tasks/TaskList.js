@@ -26,9 +26,8 @@ export default class TaskList extends React.Component {
     let resp = null;
 
     try {
-      resp = await request('/tasks/', {
+      resp = await request(this.props.feedUrl, {
         method: 'GET',
-        qs: this.props.params || {},
 
         headers: {
           'Authorization': this.props.authorization ? 'Token ' + this.props.authorization : '',
