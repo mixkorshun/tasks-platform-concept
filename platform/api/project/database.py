@@ -73,6 +73,7 @@ def prepare_query(conn, sql):
 
 def migrate():
     conn = get_connection()
+    cursor = conn.cursor()
 
     for app_name in settings.INSTALLED_APPS:
         m = importlib.import_module(app_name)
@@ -84,4 +85,4 @@ def migrate():
 
         if os.path.exists(schema_filename):
             sql_script = open(schema_filename, 'r').read()
-            conn.executescript(sql_script)
+            cursor.execute(sql_script)
