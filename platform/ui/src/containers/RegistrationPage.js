@@ -6,9 +6,10 @@ import { Link, withRouter } from 'react-router-dom';
 class RegistrationPage extends React.Component {
 
   onRegister = () => {
-    this.props.onRegister || this.props.onRegister();
+    this.props.onRegister && this.props.onRegister();
 
     this.props.history.push('/login/');
+
     message.success(
       'Your account has created successfully. ' +
       'Now you can sign in.',
