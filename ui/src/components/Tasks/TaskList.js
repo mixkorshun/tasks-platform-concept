@@ -1,7 +1,6 @@
 import React from 'react';
 import { request } from '../../utils';
-import { message } from 'antd';
-import Task from './Task';
+import { Button, List, message } from 'antd';
 
 export default class TaskList extends React.Component {
 
@@ -11,6 +10,7 @@ export default class TaskList extends React.Component {
     this.state = {
       loading: false,
       tasks: [],
+      lastLoaded: 0,
     };
   }
 
@@ -52,6 +52,7 @@ export default class TaskList extends React.Component {
       this.setState({
         loading: false,
         tasks: data,
+        lastLoaded: data.length,
       });
     } else {
       message.error(data.error_message);
@@ -59,37 +60,45 @@ export default class TaskList extends React.Component {
 
   };
 
-  renderTasks() {
-    let tasks = [];
-
-    this.state.tasks.forEach((item) => {
-      tasks.push(
-        <Task
-          name={item.name}
-          price={item.price}
-          description={item.description}
-          status={item.status}
-
-          forUser={this.props.forUser}
-        />,
-      );
-
-    });
-
-    return tasks;
-  }
-
   render() {
     return (
-      <div>
-        {
-          this.state.loading ?
-
-            <Task loading /> :
-
-            this.renderTasks()
+      <List
+        itemLayout="horizontal"
+        dataSource={this.state.tasks}
+        loading={this.state.loading}
+        loadMore={this.state.lastLoaded === 20 && (
+          <div
+            style={{
+              textAlign: 'center',
+              marginTop: 12,
+              height: 32,
+              lineHeight: '32px',
+            }}
+          >
+            <Button>Load more</Button>
+          </div>)
         }
-      </div>
+
+        renderItem={item => (
+          <List.Item
+            key={item.name}
+            actions={[
+              item.employee_id ? (
+                <Button type="primary">Done</Button>
+              ) : (
+                <Button type="primary">Take</Button>
+              ),
+            ]}
+          >
+            <List.Item.Meta
+              title={item.name}
+              description={item.description}
+            />
+
+            <span>$ {item.price}</span>
+          </List.Item>
+        )}
+      />
     );
   }
 }
