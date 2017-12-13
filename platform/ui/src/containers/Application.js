@@ -5,6 +5,7 @@ import IndexPage from './IndexPage';
 import Cookies from 'universal-cookie';
 import { request } from '../utils';
 import { message } from 'antd';
+import AuthorizedLayout from '../components/AuthorizedLayout/index';
 
 const cookies = new Cookies();
 
@@ -108,13 +109,11 @@ class Application extends React.Component {
           <LoginPage onLogin={this.handleLogin} />
         </Route>
         <EnsureLoggedIn isAuthorized={this.state.token}>
-          <Route path="/">
-            <IndexPage
-              authorization={this.state.token}
-              user={this.state.user}
-              onLogout={this.handleLogout}
-            />
-          </Route>
+          <AuthorizedLayout user={this.state.user} onLogout={this.handleLogout}>
+            <Route path="/">
+              <IndexPage authorization={this.state.token} user={this.state.user} />
+            </Route>
+          </AuthorizedLayout>
         </EnsureLoggedIn>
       </Switch>
     );
