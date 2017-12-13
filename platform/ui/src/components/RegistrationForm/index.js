@@ -1,22 +1,23 @@
 import React from 'react';
-import { Button, Form, Icon, Input, message } from 'antd';
+import { Button, Form, Icon, Input, message, Radio } from 'antd';
 import { request } from '../../utils';
 
-class LoginForm extends React.Component {
+class RegistrationForm extends React.Component {
 
   handleSubmit(e) {
     e.preventDefault();
 
     this.props.form.validateFields(async (err, values) => {
       if (!err) {
+        let resp = null;
 
-        let resp;
         try {
-          resp = await request('/authorize/', {
+          resp = await request('/register/', {
             method: 'POST',
             body: JSON.stringify({
               email: values.email,
               password: values.password,
+              type: values.type,
             }),
           });
         } catch (e) {
@@ -40,7 +41,10 @@ class LoginForm extends React.Component {
           return;
         }
 
-        this.props.onLogin && this.props.onLogin(result.token);
+        const callback = this.props.onRegister;
+        if (callback) {
+          callback();
+        }
       }
     });
   };
@@ -87,16 +91,39 @@ class LoginForm extends React.Component {
             />,
           )}
         </Form.Item>
+        <Form.Item>
+          {getFieldDecorator('type', {
+            initialValue: 'employee',
+            rules: [
+              {
+                required: true,
+                message: 'Please select your role!',
+              },
+            ],
+          })(
+            <Radio.Group
+              style={{
+                width: 200,
+                display: 'block',
+                margin: '0 auto',
+              }}
+            >
+              <Radio.Button value="employer">Employer</Radio.Button>
+              <Radio.Button value="employee">Employee</Radio.Button>
+            </Radio.Group>,
+          )}
+
+        </Form.Item>
         <Form.Item style={{ textAlign: 'center' }}>
           <Button
             type="primary"
             htmlType="submit"
             className="login-form-button"
-          >Sign in</Button>
+          >Sign Up</Button>
         </Form.Item>
       </Form>
     );
   }
 }
 
-export default Form.create()(LoginForm);
+export default Form.create()(RegistrationForm);

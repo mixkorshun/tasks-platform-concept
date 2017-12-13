@@ -7,6 +7,7 @@ import { request } from '../utils';
 import { message } from 'antd';
 import AuthorizedLayout from '../components/AuthorizedLayout';
 import EnsureLoggedIn from '../components/EnsureLoggedIn';
+import RegistrationPage from './RegistrationPage';
 
 const cookies = new Cookies();
 
@@ -24,12 +25,11 @@ class Application extends React.Component {
     }
   }
 
-  handleLogin = (token, user) => {
+  handleLogin = (token) => {
     cookies.set('sessionId', token, { path: '/' });
 
     this.setState({
-      token: token,
-      user: user,
+      token: token
     });
 
     this.loadUserProfile();
@@ -88,6 +88,11 @@ class Application extends React.Component {
         <Route exact path="/login/">
           <LoginPage onLogin={this.handleLogin} />
         </Route>
+
+        <Route exact path="/register/">
+          <RegistrationPage />
+        </Route>
+
         <EnsureLoggedIn isAuthorized={this.state.token}>
           <AuthorizedLayout
             user={this.state.user}
