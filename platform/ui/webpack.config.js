@@ -16,7 +16,15 @@ module.exports = {
         test: /\.css$/,
         loader: 'style-loader!css-loader?sourceMap',
       },
-      { test: /\.jsx?$/, loader: 'babel-loader', exclude: /node_modules/ },
+      {
+        test: /\.jsx?$/,
+        loader: 'babel-loader',
+        exclude: /node_modules/,
+        query: {
+          presets: ['react', 'es2015'],
+          plugins: ['transform-class-properties'],
+        },
+      },
       {
         test: /\.(woff2?|eot|ttf|otf)(\?.*)?$/,
         loader: 'url-loader',

@@ -15,7 +15,7 @@ export default class LoginPage extends React.Component {
           <Col span={8} offset={8}>
             <h1 style={{ textAlign: 'center', margin: '50px 0' }}>Sign In</h1>
 
-            <LoginForm />
+            <LoginForm onLogin={this.props.onLogin} />
           </Col>
         </Row>
 
