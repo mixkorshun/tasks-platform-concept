@@ -69,6 +69,56 @@ def tasks_list_unassigned():
     return jsonify(list(tasks))
 
 
+@app.route('/tasks/assigned/', methods=['GET'])
+@only_authorized
+def tasks_list_assigned():
+    last_id = request.args.get('last_id', -1, int)
+    limit = min(request.args.get('limit', 20, int), 1000)
+
+    q = qb.make('select')
+    qb.add_ordering(q, ('id', 'DESC'))
+
+    if last_id > 0:
+        qb.add_where(q, 'id < {last_id}', {
+            'last_id': last_id
+        })
+    qb.set_limit(q, limit)
+
+    qb.add_where(q, 'employee_id = {user_id}', {
+        'user_id': request.user_id
+    })
+    qb.add_where(q, 'status = "open"')
+
+    tasks = select_tasks(q)
+
+    return jsonify(list(tasks))
+
+
+@app.route('/tasks/authored/', methods=['GET'])
+@only_authorized
+def tasks_list_authored():
+    last_id = request.args.get('last_id', -1, int)
+    limit = min(request.args.get('limit', 20, int), 1000)
+
+    q = qb.make('select')
+    qb.add_ordering(q, ('id', 'DESC'))
+
+    if last_id > 0:
+        qb.add_where(q, 'id < {last_id}', {
+            'last_id': last_id
+        })
+    qb.set_limit(q, limit)
+
+    qb.add_where(q, 'author_id = {user_id}', {
+        'user_id': request.user_id
+    })
+    qb.add_where(q, 'status = "open"')
+
+    tasks = select_tasks(q)
+
+    return jsonify(list(tasks))
+
+
 @app.route('/tasks/<int:task_id>/assign/', methods=['POST'])
 @only_authorized
 def tasks_assign(task_id):
