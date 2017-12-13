@@ -12,9 +12,11 @@ export default class TaskList extends React.Component {
       loading: false,
       tasks: [],
     };
-
-    this.loadTasks();
   }
+
+  componentDidMount() {
+    this.loadTasks();
+  };
 
   loadTasks = async () => {
     this.setState({
@@ -22,19 +24,21 @@ export default class TaskList extends React.Component {
     });
 
     let resp = null;
+
     try {
       resp = await request('/tasks/', {
         method: 'GET',
         qs: this.props.params || {},
 
-        header: {
-          'Authorization': this.props.token ? 'Token ' + this.props.token : '',
+        headers: {
+          'Authorization': this.props.authorization ? 'Token ' + this.props.authorization : '',
         },
       });
     } catch (e) {
       message.error(
         'Server temporary unavailable. Please try again later.',
       );
+      return;
     }
 
 
