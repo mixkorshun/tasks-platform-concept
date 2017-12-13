@@ -1,7 +1,7 @@
 import json
 
 from flask import request, jsonify, url_for
-from werkzeug.exceptions import NotFound, Forbidden, BadRequest
+from werkzeug.exceptions import NotFound, BadRequest
 
 from project import app
 from project.auth.shortcuts import only_authorized
@@ -17,8 +17,6 @@ def tasks_list():
         last_id = request.args.get('last_id', -1, int)
         limit = min(request.args.get('limit', 20, int), 1000)
 
-        status = request.args.get('status')
-
         q = qb.make('select')
         qb.add_ordering(q, ('id', 'DESC'))
 
@@ -28,17 +26,14 @@ def tasks_list():
             })
         qb.set_limit(q, limit)
 
-        if status:
-            qb.add_where(q, 'status = {status}', {
-                'status': status
-            })
+        qb.add_where(q, 'employee_id IS NULL')
+        qb.add_where(q, 'status = "open"')
 
         tasks = select_tasks(q)
 
         return jsonify(list(tasks))
     elif request.method == 'POST':
-        if not request.user_id:
-            raise Forbidden()
+        # @todo: has perms to create
 
         post_data = json.loads(request.data.decode())
 
@@ -56,7 +51,7 @@ def tasks_list():
             description=description,
             price=price,
 
-            employer_id=request.user_id,
+            author_id=request.user_id,
             status='open',
         ))
 
