@@ -18,3 +18,15 @@ def setup():
 
 
 app = Flask(__name__)
+
+
+@app.after_request
+def after_request(resp):
+    from . import settings
+
+    allow_origin = getattr(settings, 'ACCESS_CONTROL_ALLOW_ORIGIN', None)
+    if allow_origin:
+        resp.headers['Access-Control-Allow-Origin'] = allow_origin
+        resp.headers['Access-Control-Allow-Headers'] = 'Authorization'
+
+    return resp

@@ -14,3 +14,5 @@ DATABASE_URL = os.environ.get(
     'DATABASE_URL',
     'sqlite://db.sqlite3'
 )
+
+ACCESS_CONTROL_ALLOW_ORIGIN = os.environ.get('ACCESS_CONTROL_ALLOW_ORIGIN')

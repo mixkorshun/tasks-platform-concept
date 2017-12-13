@@ -1,3 +1,5 @@
 SECRET_KEY=development
 
 DATABASE_URL=sqlite://db.sqlite3
+
+ACCESS_CONTROL_ALLOW_ORIGIN=*
