@@ -7,10 +7,6 @@ export default class LoginPage extends React.Component {
   render() {
     return (
       <Layout style={{ height: '100%' }}>
-        <Link to="/" style={{ margin: '10px 15px', color: '#aaa' }}>
-          &lt; back to home
-        </Link>
-
         <Row>
           <Col span={8} offset={8}>
             <h1 style={{ textAlign: 'center', margin: '50px 0' }}>Sign In</h1>

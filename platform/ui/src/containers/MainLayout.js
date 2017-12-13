@@ -1,8 +1,8 @@
 import React from 'react';
-import { Layout, Menu } from 'antd';
+import { Layout } from 'antd';
 import UserMenu from '../components/UserMenu';
 
-const { Header, Sider, Content } = Layout;
+const { Header, Content } = Layout;
 
 export default class MainLayout extends React.Component {
   render() {
@@ -20,17 +20,6 @@ export default class MainLayout extends React.Component {
           <UserMenu user={this.props.user} onLogout={this.props.onLogout} />
         </Header>
         <Layout>
-          <Sider width={250} style={{ background: '#fff' }}>
-            <Menu
-              mode="inline"
-              style={{ height: '100%', borderRight: 0 }}
-            >
-              <Menu.Item key="all">All tasks</Menu.Item>
-              {this.props.user && (
-                <Menu.Item key="my">My tasks</Menu.Item>
-              )}
-            </Menu>
-          </Sider>
           <Content
             style={{
               padding: 24,
@@ -38,7 +27,9 @@ export default class MainLayout extends React.Component {
               minHeight: 480,
             }}
           >
-            {this.props.children}
+            <div style={{ maxWidth: 800, margin: 'auto' }}>
+              {this.props.children}
+            </div>
           </Content>
         </Layout>
       </Layout>
