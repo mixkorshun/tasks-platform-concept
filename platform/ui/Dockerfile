@@ -8,3 +8,7 @@ RUN npm install
 
 COPY . /app
 RUN npm run build:optimize
+
+VOLUME ['/dist']
+
+CMD cp -R /app/dist /dist && tail -f /dev/null

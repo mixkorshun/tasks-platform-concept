@@ -11,7 +11,7 @@ let config = {
   },
   output: {
     path: path.resolve(__dirname, 'dist'),
-    filename: '[name].bundle.js',
+    filename: '[name].bundle.[hash].js',
     publicPath: '/',
   },
   module: {
