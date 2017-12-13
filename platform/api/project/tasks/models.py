@@ -66,6 +66,23 @@ def select_tasks(query):
         yield make_task_from_row(row)
 
 
+def update_tasks(query):
+    if isinstance(query, dict):
+        qb.set_table(query, __table__)
+        qb.set_columns(query, __fields__)
+
+        query, params = qb.to_sql(query)
+    else:
+        query, params = query, {}
+
+    conn = database.get_connection()
+
+    cursor = conn.cursor()
+    cursor.execute(database.prepare_query(conn, query), params)
+
+    return cursor.rowcount
+
+
 def update_task(task):
     q = qb.make('update', __table__)
     qb.add_values(q, [

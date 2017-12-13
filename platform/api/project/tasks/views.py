@@ -5,10 +5,10 @@ from werkzeug.exceptions import NotFound, BadRequest, Forbidden
 
 from project import app
 from project.auth.shortcuts import only_authorized
-from project.tasks.models import select_tasks, make_task, create_task, \
-    get_task_by_id
 from project.users.models import get_user_by_id
 from project.utils import qb
+from .models import select_tasks, make_task, create_task, \
+    get_task_by_id, update_tasks
 
 
 @app.route('/tasks/', methods=['GET', 'POST'])
@@ -77,3 +77,62 @@ def tasks_detail(task_id):
         raise NotFound('Task not found.')
 
     return jsonify(task)
+
+
+@app.route('/tasks/<int:task_id>/assign/', methods=['POST'])
+@only_authorized
+def tasks_assign(task_id):
+    task = get_task_by_id(task_id)
+
+    if not task:
+        raise NotFound('Task not found.')
+
+    if task['employee_id'] is not None:
+        raise Forbidden("Task already assigned.")
+
+    q = qb.make('update')
+    qb.add_values(q, [
+        ('employee_id', '{employee_id}')
+    ], {'employee_id': request.user_id})
+
+    qb.add_where(q, [
+        'id = {id}',
+        'employee_id IS NULL OR employee_id = {user_id}'
+    ], {'id': task_id, 'user_id': request.user_id})
+
+    c = update_tasks(q)
+
+    if c == 0:
+        raise Forbidden("Task already assigned.")
+
+    return jsonify({})
+
+
+@app.route('/tasks/<int:task_id>/complete/', methods=['POST'])
+@only_authorized
+def tasks_complete(task_id):
+    task = get_task_by_id(task_id)
+
+    if not task:
+        raise NotFound('Task not found.')
+
+    if task['employee_id'] != request.user_id:
+        raise Forbidden("Task not assigned to you.")
+
+    if task['status'] == 'done':
+        raise Forbidden("Task already marked as done.")
+
+    q = qb.make('update')
+    qb.add_values(q, [('status', '"done"')])
+
+    qb.add_where(q, [
+        'id = {id}',
+        'status = "open"'
+    ], {'id': task_id})
+
+    c = update_tasks(q)
+
+    if c == 0:
+        raise Forbidden("Task already marked as done.")
+
+    return jsonify({})
