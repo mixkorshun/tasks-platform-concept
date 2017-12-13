@@ -1,12 +1,13 @@
 import json
 
 from flask import request, jsonify, url_for
-from werkzeug.exceptions import NotFound, BadRequest
+from werkzeug.exceptions import NotFound, BadRequest, Forbidden
 
 from project import app
 from project.auth.shortcuts import only_authorized
 from project.tasks.models import select_tasks, make_task, create_task, \
     get_task_by_id
+from project.users.models import get_user_by_id
 from project.utils import qb
 
 
@@ -33,7 +34,11 @@ def tasks_list():
 
         return jsonify(list(tasks))
     elif request.method == 'POST':
-        # @todo: has perms to create
+        user = get_user_by_id(request.user_id)
+        if user['type'] != 'employer':
+            raise Forbidden(
+                'Sorry, you cannot create new tasks.'
+            )
 
         post_data = json.loads(request.data.decode())
 

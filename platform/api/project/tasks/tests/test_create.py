@@ -8,12 +8,12 @@ from project.users.models import create_user
 
 
 @pytest.fixture(name='employer')
-def user_employer():
+def employer_fixture():
     return create_user({
         'id': 1,
-        'email': 'employee@localhost',
+        'email': 'employer@localhost',
         'password': '---',
-        'type': 'employee'
+        'type': 'employer'
     })
 
 
