@@ -20,7 +20,7 @@ export default class MainLayout extends React.Component {
           <UserMenu user={this.props.user} onLogout={this.props.onLogout} />
         </Header>
         <Layout>
-          <Sider style={{ background: '#fff' }}>
+          <Sider width={250} style={{ background: '#fff' }}>
             <Menu
               mode="inline"
               style={{ height: '100%', borderRight: 0 }}

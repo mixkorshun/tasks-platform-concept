@@ -1,11 +1,12 @@
 import React from 'react';
 import MainLayout from './MainLayout';
+import TaskList from '../components/Tasks/TaskList';
 
 export default class IndexPage extends React.Component {
   render() {
     return (
       <MainLayout {...this.props}>
-        Hello world
+        <TaskList forUser={this.props.user} />
       </MainLayout>
     );
   }
