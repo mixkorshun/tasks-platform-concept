@@ -4,12 +4,14 @@ from flask import request, jsonify, url_for
 from werkzeug.exceptions import NotFound, Forbidden, BadRequest
 
 from project import app
+from project.auth.shortcuts import only_authorized
 from project.tasks.models import select_tasks, make_task, create_task, \
     get_task_by_id
 from project.utils import qb
 
 
 @app.route('/tasks/', methods=['GET', 'POST'])
+@only_authorized
 def tasks_list():
     if request.method == 'GET':
         last_id = request.args.get('last_id', -1, int)

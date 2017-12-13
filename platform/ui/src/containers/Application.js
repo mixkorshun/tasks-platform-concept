@@ -109,7 +109,11 @@ class Application extends React.Component {
         </Route>
         <EnsureLoggedIn isAuthorized={this.state.token}>
           <Route path="/">
-            <IndexPage user={this.state.user} onLogout={this.handleLogout} />
+            <IndexPage
+              authorization={this.state.token}
+              user={this.state.user}
+              onLogout={this.handleLogout}
+            />
           </Route>
         </EnsureLoggedIn>
       </Switch>
