@@ -19,7 +19,7 @@ def charge_author_for_task(user_id, task):
 def pay_user_for_task(user_id, task):
     charge_money(
         user_id,
-        task['price'] * Decimal.from_float((1 - settings.SYSTEM_COMMISSION)),
+        float(task['price']) * (1 - settings.SYSTEM_COMMISSION),
         task['id']
     )
 

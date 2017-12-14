@@ -1,3 +1,5 @@
 SECRET_KEY='testing'
 
 DATABASE_URL='sqlite://:memory:'
+
+CACHE_URL=dummy://

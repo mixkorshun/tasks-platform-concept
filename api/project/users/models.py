@@ -1,10 +1,13 @@
-from project import database
+from project import database, cache
 from project.utils import qb
 from .password import check_password
 
 __table__ = 'users'
 
 __fields__ = ('id', 'email', 'password', 'type', 'balance')
+
+__cache_key__ = 'users:%s'
+__cache_ttl__ = 900  # 15 minutes
 
 
 def make_user(**kwargs):
@@ -46,6 +49,10 @@ def get_user_by_credentials(email, password):
 
 
 def get_user_by_id(user_id):
+    user_cached = cache.load(__cache_key__ % user_id)
+    if user_cached:
+        return user_cached
+
     q = qb.make('select', __table__)
     qb.set_columns(q, __fields__)
     qb.add_where(q, '%(pk)s = {%(pk)s}' % {'pk': __fields__[0]}, {
@@ -58,7 +65,11 @@ def get_user_by_id(user_id):
     sql, params = qb.to_sql(q)
     cursor.execute(database.prepare_query(conn, sql), params)
 
-    return make_user_from_row(cursor.fetchone())
+    user = make_user_from_row(cursor.fetchone())
+
+    cache.store(__cache_key__ % user_id, user, __cache_ttl__)
+
+    return user
 
 
 def increase_user_amount(user_id, amount):
@@ -77,6 +88,8 @@ def increase_user_amount(user_id, amount):
     cursor.execute(database.prepare_query(conn, sql), params)
     conn.commit()
 
+    cache.delete(__cache_key__ % user_id)
+
 
 def decrease_user_amount(user_id, amount):
     q = qb.make('update', __table__)
@@ -93,6 +106,8 @@ def decrease_user_amount(user_id, amount):
     sql, params = qb.to_sql(q)
     cursor.execute(database.prepare_query(conn, sql), params)
     conn.commit()
+
+    cache.delete(__cache_key__ % user_id)
 
 
 def create_user(user):
@@ -119,5 +134,7 @@ def create_user(user):
         raise RuntimeError('No users created.')
 
     user[__fields__[0]] = cursor.lastrowid
+
+    cache.store(__cache_key__ % user['id'], user, __cache_ttl__)
 
     return user
