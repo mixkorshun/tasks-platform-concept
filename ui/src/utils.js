@@ -1,8 +1,5 @@
 export function request(path, options) {
-  // todo: remove hardcoded value
-  const prefix = 'http://127.0.0.1:5000';
-
-  let url = prefix + path;
+  let url = api_endpoint + path;
   if (options.qs) {
     url += '?' + encodeQueryParam(options.qs);
   }

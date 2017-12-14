@@ -44,6 +44,10 @@ let config = {
       filename: 'index.html',
       inject: 'body',
     }),
+    new webpack.DefinePlugin({
+      'process.env': { NODE_ENV: JSON.stringify(process.env.NODE_ENV) },
+      'api_endpoint': JSON.stringify(process.env.API_ENDPOINT || '/api'),
+    }),
   ],
 };
 
