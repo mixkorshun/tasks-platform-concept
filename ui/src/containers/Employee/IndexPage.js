@@ -3,6 +3,7 @@ import TaskList from '../../components/Tasks/TaskList';
 import { Col, Row } from 'antd';
 
 export default class IndexPage extends React.Component {
+
   render() {
     return (
       <Row>
@@ -18,14 +19,15 @@ export default class IndexPage extends React.Component {
           >
             <TaskList
               feedUrl="/tasks/unassigned/"
-              autoreload={60000}
               forUser={this.props.user}
               authorization={this.props.authorization}
+              taskAction="assign"
+              taskActionLabel="Assign"
             />
           </div>
         </Col>
 
-        <Col offset={2} span={10} >
+        <Col offset={2} span={10}>
           <h2>Assigned to me</h2>
 
           <div
@@ -40,6 +42,8 @@ export default class IndexPage extends React.Component {
               autoreload={60000}
               forUser={this.props.user}
               authorization={this.props.authorization}
+              taskAction="complete"
+              taskActionLabel="Done"
             />
           </div>
 

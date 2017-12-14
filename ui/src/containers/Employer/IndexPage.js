@@ -28,7 +28,6 @@ class IndexPage extends React.Component {
             <TaskList
               feedUrl="/tasks/authored/"
               authorization={this.props.authorization}
-              mode="readonly"
             />
           </div>
         </Col>

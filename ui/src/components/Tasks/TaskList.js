@@ -14,23 +14,49 @@ export default class TaskList extends React.Component {
     };
   }
 
-  componentDidMount() {
-    this.loadTasks();
-
-    if (this.props.autoreload) {
-      this.loader = setInterval(() => {
-        this.loadTasks(false);
-      }, this.props.autoreload);
+  handleTaskAction = async (item, index) => {
+    let resp;
+    try {
+      resp = await request(
+        '/tasks/' + item.id + '/' + this.props.taskAction + '/', {
+          method: 'POST',
+          headers: {
+            'Authorization': this.props.authorization ? 'Token ' + this.props.authorization : '',
+          },
+        });
+    } catch (e) {
+      message.error(
+        'Server Temporary Unavailable. ' +
+        'Please try again in several minutes.',
+      );
     }
+
+    let result = await resp.json();
+
+    if (!resp.ok) {
+      if (Math.round(resp.status / 100) * 100 === 500) {
+        message.error(
+          'Server Temporary Unavailable. ' +
+          'Please try again in several minutes.',
+        );
+      } else {
+        message.error(result.error_message);
+      }
+    }
+
+    let tasks = this.state.tasks;
+    tasks.splice(index, 1);
+
+    this.setState({
+      tasks: tasks,
+    });
   };
 
-  componentWillUnmount() {
-    if (this.loader) {
-      clearInterval(this.loader);
-    }
-  }
+  componentDidMount() {
+    this.reloadTasks();
+  };
 
-  loadTasks = async (useLoading = true) => {
+  reloadTasks = async (useLoading = true) => {
     if (useLoading) {
       this.setState({
         loading: true,
@@ -93,15 +119,14 @@ export default class TaskList extends React.Component {
           </div>)
         }
 
-        renderItem={item => (
+        renderItem={(item, index) => (
           <List.Item
             key={item.name}
-            actions={this.props.mode !== 'readonly' && [
-              item.employee_id ? (
-                <Button type="primary">Done</Button>
-              ) : (
-                <Button type="primary">Take</Button>
-              ),
+            actions={this.props.taskAction && [
+              <Button
+                type="primary"
+                onClick={(e) => this.handleTaskAction(item, index)}
+              >{this.props.taskActionLabel}</Button>,
             ]}
           >
             <List.Item.Meta
