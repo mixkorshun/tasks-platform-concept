@@ -40,22 +40,13 @@ services:
   ui:
     build:  ui/
 
-    volumes:
-      - ui:/dist
-
   frontend:
     image: nginx:stable-alpine
     ports:
       - 9001:80
-    depends_on:
-      - api
     links:
       - ui
       - api
 
     volumes:
      - ./nginx.conf:/etc/nginx/nginx.conf:ro
-     - ui:/dist:ro
-
-volumes:
-  ui: {}

@@ -3,12 +3,20 @@ FROM node:9-alpine
 RUN mkdir /app
 WORKDIR /app
 
+RUN apk add --no-cache nginx
+RUN mkdir /run/nginx
+
 COPY package-lock.json package.json /app/
 RUN npm install
 
-COPY . /app
+COPY src/ /app/src/
+COPY webpack.config.js /app
+
 RUN npm run build:optimize
 
-VOLUME ['/dist']
+COPY nginx.conf /etc/nginx
 
-CMD cp -R /app/dist /dist && tail -f /dev/null
+EXPOSE 80
+STOPSIGNAL SIGTERM
+
+CMD ["nginx", "-g", "daemon off;"]
