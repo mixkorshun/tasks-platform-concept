@@ -7,10 +7,12 @@ export default class TaskList extends React.Component {
   constructor(props) {
     super(props);
 
+    this.limit = 15;
+
     this.state = {
       loading: false,
       tasks: [],
-      lastLoaded: 0,
+      hasMore: false,
     };
   }
 
@@ -53,51 +55,75 @@ export default class TaskList extends React.Component {
   };
 
   componentDidMount() {
-    this.reloadTasks();
+    this.handleRefresh();
   };
 
-  reloadTasks = async (useLoading = true) => {
-    if (useLoading) {
-      this.setState({
-        loading: true,
-      });
-    }
-
+  loadTasks = async (lastId, limit) => {
     let resp = null;
 
     try {
       resp = await request(this.props.feedUrl, {
         method: 'GET',
-
+        qs: {
+          'last_id': lastId || 0,
+          'limit': limit,
+        },
         headers: {
           'Authorization': this.props.authorization ? 'Token ' + this.props.authorization : '',
         },
       });
     } catch (e) {
-      message.error(
-        'Server temporary unavailable. Please try again later.',
-      );
-      return;
+      throw new Error('Server temporary unavailable. Please try again later.');
     }
 
 
     if (Math.round(resp.status / 100) * 100 === 500) {
-      message.error('Internal server error occurred.');
-      return;
+      throw new Error('Internal server error occurred.');
     }
 
     let data = await resp.json();
 
     if (resp.ok) {
+      return data;
+    } else {
+      throw new Error(data.error_message);
+    }
+  };
+
+  handleRefresh = () => {
+    this.setState({
+      loading: true,
+    });
+
+    this.loadTasks(null, this.limit).then((data) => {
       this.setState({
         loading: false,
+        hasMore: data.length === this.limit,
         tasks: data,
-        lastLoaded: data.length,
       });
-    } else {
-      message.error(data.error_message);
-    }
+    }).catch((e) => {
+      message.error(e);
+    });
+  };
 
+  handleLoadMore = () => {
+    this.setState({
+      loading: true,
+    });
+
+    const lastId = this.state.tasks[this.state.tasks.length - 1].id;
+
+    this.loadTasks(lastId, this.limit).then((data) => {
+      let tasks = this.state.tasks.concat(data);
+
+      this.setState({
+        loading: false,
+        hasMore: data.length === this.limit,
+        tasks: tasks,
+      });
+    }).catch((e) => {
+      message.error(e);
+    });
   };
 
   render() {
@@ -106,7 +132,7 @@ export default class TaskList extends React.Component {
         itemLayout="horizontal"
         dataSource={this.state.tasks}
         loading={this.state.loading}
-        loadMore={this.state.lastLoaded === 20 && (
+        loadMore={this.state.hasMore && (
           <div
             style={{
               textAlign: 'center',
@@ -115,7 +141,7 @@ export default class TaskList extends React.Component {
               lineHeight: '32px',
             }}
           >
-            <Button>Load more</Button>
+            <Button onClick={this.handleLoadMore}>Load more</Button>
           </div>)
         }
 

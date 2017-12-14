@@ -22,7 +22,7 @@ export default class AuthorizedLayout extends React.Component {
 
   render() {
     return (
-      <Layout style={{ height: '100%' }}>
+      <Layout style={{ minHeight: '100%' }}>
         <Header className="header">
           <h1
             style={{

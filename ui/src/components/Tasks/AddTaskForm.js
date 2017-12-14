@@ -19,7 +19,7 @@ class AddTaskForm extends React.Component {
             },
             body: JSON.stringify({
               name: values.name,
-              price: values.price,
+              price: parseFloat(values.price),
               description: values.description,
             }),
           });
@@ -81,14 +81,7 @@ class AddTaskForm extends React.Component {
           )}
         </Form.Item>
         <Form.Item>
-          {getFieldDecorator('description', {
-            rules: [
-              {
-                required: true,
-                message: 'Please input task price!',
-              },
-            ],
-          })(
+          {getFieldDecorator('description')(
             <Input.TextArea rows={4} placeholder="Description" />,
           )}
         </Form.Item>
