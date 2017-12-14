@@ -86,3 +86,5 @@ def migrate():
         if os.path.exists(schema_filename):
             sql_script = open(schema_filename, 'r').read()
             cursor.execute(sql_script)
+
+    conn.commit()

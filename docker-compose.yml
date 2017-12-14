@@ -12,8 +12,9 @@ services:
       MYSQL_DATABASE: 'tasks'
 
   migrate:
-    build:  api/
-    command: './wait_for_database.sh && python migrate.py'
+    build: api/
+    command: './docker-migrate.sh'
+
     depends_on:
       - database
     environment:
