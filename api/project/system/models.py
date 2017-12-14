@@ -1,7 +1,5 @@
 from logging import getLogger
 
-from decimal import Decimal
-
 from project import settings
 from project.transactions.actions import withdraw_money, charge_money
 

@@ -1,5 +1,3 @@
-from urllib.parse import urlparse
-
 from pymemcache.client import Client
 
 
