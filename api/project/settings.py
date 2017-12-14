@@ -11,10 +11,9 @@ INSTALLED_APPS = [
     'project.transactions',
 ]
 
-DATABASE_URL = os.environ.get(
-    'DATABASE_URL',
-    'sqlite://db.sqlite3'
-)
+DATABASES = {
+    'default': os.environ.get('DATABASE_URL', 'sqlite://db.sqlite3')
+}
 
 CACHE_URL = os.environ.get('CACHE_URL', 'locmem://')
 

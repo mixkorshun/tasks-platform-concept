@@ -5,86 +5,86 @@ from urllib.parse import urlparse
 
 from . import settings
 
-connection = None
+connections = {}
 
 
-def connect(uri):
-    uri = urlparse(uri)
+def get_connection(name='default'):
+    if name in connections:
+        return connections[name]
 
-    if uri.scheme == 'sqlite':
-        import sqlite3
+    database_url = urlparse(settings.DATABASES[name])
 
-        return sqlite3.connect(
-            uri.netloc + uri.path
+    if database_url.scheme == 'sqlite':
+        from libs.database import sqlite
+
+        conn = sqlite.connect(
+            database_url.netloc + database_url.path
         )
-    elif uri.scheme == 'mysql':
-        import MySQLdb
+    elif database_url.scheme == 'mysql':
+        from libs.database import mysql
 
-        return MySQLdb.connect(
-            host=uri.hostname,
-            port=uri.port or 3306,
-            user=uri.username or 'root',
-            password=uri.password or '',
-            db=uri.path.strip('/')
+        conn = mysql.connect(
+            host=database_url.hostname,
+            port=database_url.port or 3306,
+            user=database_url.username or 'root',
+            password=database_url.password or '',
+            db=database_url.path.strip('/')
         )
     else:
-        raise NotImplementedError()
+        raise NotImplementedError(
+            'Database `%s` is not supported.' % database_url.scheme
+        )
+
+    connections[name] = conn
+    return conn
 
 
-def get_connection():
-    global connection
-
-    if connection is None:
-        connection = connect(settings.DATABASE_URL)
-
-    return connection
-
-
-def get_platform(conn):
+def get_platform_by_connection(connection):
+    from libs.database import sqlite, mysql
     return {
-        'sqlite3': 'sqlite',
-        'MySQLdb.connections': 'mysql'
+        'sqlite3': sqlite,
+        'MySQLdb.connections': mysql
     }.get(type(connection).__module__)
-
-
-def get_cursor(conn):
-    return conn.cursor()
 
 
 param_regex = re.compile('\{([^\}]+)\}')
 
 
-def prepare_query(conn, sql):
+def prepare_query(connection, sql):
     params = param_regex.findall(sql)
 
-    platform = get_platform(conn)
-
-    if platform == 'sqlite':
-        format_param = lambda x: ':' + x  # noqa: E731
-    elif platform == 'mysql':
-        format_param = lambda x: '%(' + x + ')s'  # noqa: E731
-    else:
-        raise NotImplementedError()
+    platform = get_platform_by_connection(connection)
 
     return sql.format(**{
-        param: format_param(param) for param in params
+        param: platform.format_param_name(param)
+        for param in params
     })
 
 
 def migrate():
-    conn = get_connection()
-    cursor = conn.cursor()
-
     for app_name in settings.INSTALLED_APPS:
-        m = importlib.import_module(app_name)
+        app_dir = os.path.dirname(importlib.import_module(app_name).__file__)
+
+        try:
+            connection_name = getattr(
+                importlib.import_module('%s.models' % app_name),
+                '__connection__',
+                'default'
+            )
+        except ImportError:
+            connection_name = 'default'
+
+        connection = get_connection(connection_name)
+
+        platform_name = get_platform_by_connection(connection).name
 
         schema_filename = os.path.join(
-            os.path.dirname(m.__file__),
-            'schema', 'schema.%s.sql' % get_platform(conn)
+            app_dir, 'schema', 'schema.%s.sql' % platform_name
         )
 
+        cursor = connection.cursor()
         if os.path.exists(schema_filename):
             sql_script = open(schema_filename, 'r').read()
             cursor.execute(sql_script)
 
-    conn.commit()
+        connection.commit()
