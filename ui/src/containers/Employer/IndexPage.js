@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Col, Row } from 'antd';
+import { Button } from 'antd';
 import TaskList from '../../components/Tasks/TaskList';
 import { withRouter } from 'react-router-dom';
 
@@ -11,27 +11,22 @@ class IndexPage extends React.Component {
 
   render() {
     return (
-      <Row>
+      <div>
+        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+          <h1>My tasks</h1>
+          <Button
+            style={{ marginTop: '7px' }}
+            icon="plus"
+            shape="circle"
+            onClick={this.clickAddTask}
+          />
+        </div>
 
-        <Col offset={7} span={10}>
-          <div style={{ background: '#fff', padding: 24 }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <h1>My tasks</h1>
-              <Button
-                style={{ marginTop: '7px' }}
-                icon="plus"
-                shape="circle"
-                onClick={this.clickAddTask}
-              />
-            </div>
-
-            <TaskList
-              feedUrl="/tasks/authored/"
-              authorization={this.props.authorization}
-            />
-          </div>
-        </Col>
-      </Row>
+        <TaskList
+          feedUrl="/tasks/authored/"
+          authorization={this.props.authorization}
+        />
+      </div>
     );
   }
 }

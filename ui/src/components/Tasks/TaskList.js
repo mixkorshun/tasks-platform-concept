@@ -145,6 +145,10 @@ export default class TaskList extends React.Component {
           </div>)
         }
 
+        style={{
+          textAlign: 'left',
+        }}
+
         renderItem={(item, index) => (
           <List.Item
             key={item.name}
@@ -160,7 +164,7 @@ export default class TaskList extends React.Component {
               description={item.description}
             />
 
-            <span>$ {item.price}</span>
+            <div style={{ marginLeft: '50px', fontWeight: 600 }}>${item.price}</div>
           </List.Item>
         )}
       />

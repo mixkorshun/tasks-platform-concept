@@ -1,7 +1,7 @@
 import React from 'react';
-import { Icon, Layout, Menu } from 'antd';
+import { Col, Icon, Layout, Menu, Row } from 'antd';
 
-const { Header, Content } = Layout;
+const { Header, Content, Footer } = Layout;
 
 const iconStyles = {
   fontSize: 20,
@@ -63,9 +63,24 @@ export default class AuthorizedLayout extends React.Component {
               minHeight: 480,
             }}
           >
-            {this.props.children}
+            <Row type="flex" justify="center">
+              <Col
+                span={12} style={{
+                minWidth: 600,
+                background: '#fff',
+                padding: ' 10px 24px 24px',
+                margin: 0,
+                minHeight: '480px',
+              }}
+              >
+                {this.props.children}
+              </Col>
+            </Row>
           </Content>
         </Layout>
+        <Footer style={{ textAlign: 'center', color: '#aaa', fontSize: 12 }}>
+          Tasks Platform. 2017 &copy;
+        </Footer>
       </Layout>
     );
   }
