@@ -13,7 +13,8 @@ def employer_fixture():
         'id': 1,
         'email': 'employer@localhost',
         'password': '---',
-        'type': 'employer'
+        'type': 'employer',
+        'balance': 0,
     })
 
 

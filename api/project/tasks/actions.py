@@ -1,4 +1,6 @@
-from project.users.models import get_user_by_id
+from project.transactions.models import make_transaction, create_transaction
+from project.users.models import get_user_by_id, increase_user_amount, \
+    decrease_user_amount
 from project.utils import qb
 from .models import get_task_by_id, update_tasks, make_task, create_task
 
@@ -8,7 +10,7 @@ def add_task(name, author_id, price, description):
     if user['type'] != 'employer':
         raise PermissionError('Only employer can add tasks.')
 
-    return create_task(make_task(
+    task = create_task(make_task(
         name=name,
         description=description,
         price=price,
@@ -16,6 +18,18 @@ def add_task(name, author_id, price, description):
         author_id=author_id,
         status='open',
     ))
+
+    transaction = make_transaction(
+        user_id=author_id,
+        task_id=task['id'],
+        amount=-task['price']
+    )
+
+    create_transaction(transaction)
+
+    decrease_user_amount(author_id, task['price'])
+
+    return task
 
 
 def assign_task(task_id, user_id):
@@ -67,3 +81,12 @@ def complete_task(task_id, user_id):
 
     if c == 0:
         raise PermissionError("Already done.")
+
+    transaction = make_transaction(
+        user_id=user_id,
+        task_id=task_id,
+        amount=task['price']
+    )
+
+    create_transaction(transaction)
+    increase_user_amount(user_id, task['price'])

@@ -15,6 +15,7 @@ def fixture_user():
         'email': 'one@localhost',
         'password': encode_password('qwerty'),
         'type': 'employee',
+        'balance': 0,
     })
 
 

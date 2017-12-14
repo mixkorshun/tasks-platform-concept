@@ -4,7 +4,7 @@ from .password import check_password
 
 __table__ = 'users'
 
-__fields__ = ('id', 'email', 'password', 'type')
+__fields__ = ('id', 'email', 'password', 'type', 'balance')
 
 
 def make_user(**kwargs):
@@ -61,13 +61,14 @@ def get_user_by_id(user_id):
     return make_user_from_row(cursor.fetchone())
 
 
-def update_user(user):
+def increase_user_amount(user_id, amount):
     q = qb.make('update', __table__)
     qb.add_values(q, [
-        (field, ':' + field) for field in __fields__[1:]
-    ])
-    qb.add_where(q, '%(pk)s = {%(pk)s}' % {'pk': __fields__[0]})
-    qb.add_params(q, user)
+        ('balance', 'balance + {amount}')
+    ], {'amount': amount})
+    qb.add_where(q, '%s = {pk}' % __fields__[0], {
+        'pk': user_id
+    })
 
     conn = database.get_connection()
 
@@ -76,10 +77,22 @@ def update_user(user):
     cursor.execute(database.prepare_query(conn, sql), params)
     conn.commit()
 
-    if not cursor.rowcount:
-        raise RuntimeError('No users updated.')
 
-    return user
+def decrease_user_amount(user_id, amount):
+    q = qb.make('update', __table__)
+    qb.add_values(q, [
+        ('balance', 'balance - {amount}')
+    ], {'amount': amount})
+    qb.add_where(q, '%s = {pk}' % __fields__[0], {
+        'pk': user_id
+    })
+
+    conn = database.get_connection()
+
+    cursor = conn.cursor()
+    sql, params = qb.to_sql(q)
+    cursor.execute(database.prepare_query(conn, sql), params)
+    conn.commit()
 
 
 def create_user(user):

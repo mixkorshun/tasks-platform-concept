@@ -8,6 +8,7 @@ INSTALLED_APPS = [
     'project.users',
     'project.auth',
     'project.tasks',
+    'project.transactions',
 ]
 
 DATABASE_URL = os.environ.get(

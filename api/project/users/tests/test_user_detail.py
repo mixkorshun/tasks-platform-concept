@@ -10,7 +10,8 @@ def user_employee():
         'id': 1,
         'email': 'employee@localhost',
         'password': '---',
-        'type': 'employee'
+        'type': 'employee',
+        'balance': 0,
     })
 
 

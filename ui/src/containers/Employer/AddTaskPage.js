@@ -12,7 +12,7 @@ class AddTaskPage extends React.Component {
   render() {
     return (
       <Row>
-        <Col  offset={7} span={10}>
+        <Col offset={7} span={10}>
           <div style={{ background: '#fff', padding: 24 }}>
             <h1>Add task</h1>
 

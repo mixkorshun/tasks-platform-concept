@@ -12,7 +12,8 @@ def employer_fixture():
         'id': 1,
         'email': 'employer@localhost',
         'password': '---',
-        'type': 'employer'
+        'type': 'employer',
+        'balance': 0,
     })
 
 
@@ -22,7 +23,8 @@ def employee_fixture():
         'id': 2,
         'email': 'employee@localhost',
         'password': '---',
-        'type': 'employee'
+        'type': 'employee',
+        'balance': 0,
     })
 
 
