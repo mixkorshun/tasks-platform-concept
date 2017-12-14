@@ -33,7 +33,7 @@ def test_create_task(client, employer):
         ('Authorization', 'Token ' + tokens.get_token(employer['id']))
     ])
 
-    assert resp.status_code == 201
+    assert resp.status_code == 201, resp.json['error_message']
     assert resp.json['id'] > 0
     assert resp.json['name'] == 'Task 1'
     assert resp.json['price'] == 200
@@ -44,7 +44,8 @@ def test_create_task(client, employer):
 
 def test_create_minimal_params(client, employer):
     resp = client.post(url_for('tasks_create'), data=json.dumps({
-        'name': 'Task 1'
+        'name': 'Task 1',
+        'price': 200.40
     }), headers=[
         ('Authorization', 'Token ' + tokens.get_token(employer['id']))
     ])
@@ -52,7 +53,7 @@ def test_create_minimal_params(client, employer):
     assert resp.status_code == 201
     assert resp.json['id'] > 0
     assert resp.json['name'] == 'Task 1'
-    assert resp.json['price'] is None
+    assert resp.json['price'] == 200.40
     assert resp.json['description'] == ''
 
 

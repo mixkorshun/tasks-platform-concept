@@ -1,10 +1,10 @@
-import json
-
+from decimal import Decimal
 from flask import request, jsonify
 from werkzeug.exceptions import NotFound, BadRequest, Forbidden
 
 from project import app
 from project.auth.shortcuts import only_authorized
+from project.utils import get_post_data, validators as v
 from project.utils.pagination import paginate_by_pk
 from .actions import assign_task, complete_task, add_task
 from .lists import build_authored, build_unassigned, build_assigned
@@ -14,22 +14,25 @@ from .models import select_tasks
 @app.route('/tasks/', methods=['POST'])
 @only_authorized
 def tasks_create():
-    post_data = json.loads(request.data.decode())
+    data = get_post_data(request, {
+        'name': '',
+        'price': None,
+        'description': ''
+    })
 
     try:
-        name = post_data['name']
-        description = post_data.get('description', '')
-        price = post_data.get('price')
-    except KeyError:
+        v.required(data['name'])
+        v.type(v.required(data['price']), (int, float, Decimal))
+    except ValueError:
         raise BadRequest(
-            'Missing one of following required params: (name,)'
+            'Invalid form params.'
         )
 
     try:
         task = add_task(
-            name=name,
-            price=price,
-            description=description,
+            name=data['name'],
+            price=data['price'],
+            description=data['description'],
             author_id=request.user_id
         )
     except PermissionError as e:
