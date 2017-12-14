@@ -3,8 +3,10 @@ CREATE TABLE `tasks` (
   `author_id` int(11) NOT NULL,
   `employee_id` int(11) DEFAULT NULL,
   `name` varchar(255) NOT NULL DEFAULT '',
-  `status` tinyint(11) NOT NULL,
+  `status` varchar(11) NOT NULL,
   `price` decimal(10,2) NOT NULL,
   `description` tinytext NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+  PRIMARY KEY (`id`),
+  KEY `idx_employee_lists` (`employee_id`,`status`,`id`),
+  KEY `idx_employer_lists` (`author_id`,`status`,`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=151 DEFAULT CHARSET=utf8mb4;
