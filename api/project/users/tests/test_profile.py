@@ -1,5 +1,5 @@
 import pytest
-from flask import url_for
+from flask import url_for, request
 
 from project.auth import tokens
 from project.users.models import create_user
@@ -24,8 +24,10 @@ def test_get_not_authenticated(client):
 
 
 def test_get_profile(client, employee):
+    client.open()
+
     resp = client.get(url_for('users_me'), headers=[
-        ('Authorization', 'Token ' + tokens.get_token(employee['id']))
+        ('Authorization', 'Token ' + tokens.get_token(request, employee['id']))
     ])
 
     assert resp.status_code == 200

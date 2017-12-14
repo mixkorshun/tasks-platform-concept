@@ -1,7 +1,7 @@
 import json
 
 import pytest
-from flask import url_for
+from flask import url_for, request
 
 from project.users.models import create_user
 from project.users.password import encode_password
@@ -29,7 +29,7 @@ def test_correct_login(user, client):
     )
 
     assert resp.status_code == 200
-    assert tokens.get_user_id(resp.json['token']) == 1
+    assert tokens.get_user_id(request, resp.json['token']) == 1
 
 
 def test_incorrect_login(user, client):

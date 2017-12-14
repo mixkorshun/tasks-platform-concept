@@ -28,7 +28,7 @@ def authorize():
     if not user:
         raise InvalidCredentials()
 
-    token = tokens.get_token(user['id'])
+    token = tokens.get_token(request, user['id'])
 
     return jsonify({
         'token': token

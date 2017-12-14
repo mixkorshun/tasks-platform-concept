@@ -1,5 +1,5 @@
 import pytest
-from flask import url_for
+from flask import url_for, request
 
 from project.auth.tokens import get_token
 from project.users.models import create_user
@@ -45,8 +45,10 @@ def tasks_fixture(employer):
 
 
 def test_tasks_list(client, tasks, employee):
+    client.open()
+
     resp = client.get(url_for('tasks_list_unassigned'), headers=[
-        ('Authorization', 'Token ' + get_token(employee['id']))
+        ('Authorization', 'Token ' + get_token(request, employee['id']))
     ])
 
     assert resp.status_code == 200
@@ -55,8 +57,10 @@ def test_tasks_list(client, tasks, employee):
 
 
 def test_tasks_list_limit(tasks, client, employee):
+    client.open()
+
     resp = client.get(url_for('tasks_list_unassigned') + "?limit=5", headers=[
-        ('Authorization', 'Token ' + get_token(employee['id']))
+        ('Authorization', 'Token ' + get_token(request, employee['id']))
     ])
 
     assert resp.status_code == 200
@@ -64,10 +68,12 @@ def test_tasks_list_limit(tasks, client, employee):
 
 
 def test_tasks_list_from_last_id(tasks, client, employee):
+    client.open()
+
     resp = client.get(url_for('tasks_list_unassigned') + "?last_id=5",
                       headers=[
                           ('Authorization',
-                           'Token ' + get_token(employee['id']))
+                           'Token ' + get_token(request, employee['id']))
                       ])
 
     assert resp.status_code == 200

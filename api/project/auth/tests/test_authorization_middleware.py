@@ -34,7 +34,8 @@ def test_forbidden_when_invalid_token(client):
 
 
 def test_valid_token(client):
-    token = tokens.get_token(12)
+    client.open()
+    token = tokens.get_token(request, 12)
 
     client.get('/', headers=[
         ('Authorization', 'Token %s' % token)

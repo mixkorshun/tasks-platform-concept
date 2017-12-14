@@ -1,5 +1,5 @@
 import pytest
-from flask import url_for
+from flask import url_for, request
 
 from project.auth.tokens import get_token
 from project.tasks.models import create_task, make_task, get_task_by_id, \
@@ -42,8 +42,10 @@ def task_fixture(employer):
 
 
 def test_assign_task(client, task, employee):
+    client.open()
+
     resp = client.post(url_for('tasks_assign', task_id=task['id']), headers=[
-        ('Authorization', 'Token ' + get_token(employee['id']))
+        ('Authorization', 'Token ' + get_token(request, employee['id']))
     ])
     task = get_task_by_id(task['id'])
 
@@ -52,8 +54,10 @@ def test_assign_task(client, task, employee):
 
 
 def test_assign_deleted_task(client, employee):
+    client.open()
+
     resp = client.post(url_for('tasks_assign', task_id=1), headers=[
-        ('Authorization', 'Token ' + get_token(employee['id']))
+        ('Authorization', 'Token ' + get_token(request, employee['id']))
     ])
     assert resp.status_code == 404
 
@@ -63,7 +67,7 @@ def test_cannot_assign_already_assigned_task(client, task, employee):
     update_task(task)
 
     resp = client.post(url_for('tasks_assign', task_id=task['id']), headers=[
-        ('Authorization', 'Token ' + get_token(employee['id']))
+        ('Authorization', 'Token ' + get_token(request, employee['id']))
     ])
 
     assert resp.status_code == 403

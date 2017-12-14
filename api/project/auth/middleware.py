@@ -18,13 +18,14 @@ def get_authorization_token(req):
 
 @app.before_request
 def before_request():
+    # noinspection PyTypeChecker
     token = get_authorization_token(request)
 
     user_id = None
 
     if token:
         try:
-            user_id = tokens.get_user_id(token)
+            user_id = tokens.get_user_id(request, token)
         except tokens.DecodeError:
             pass
 
