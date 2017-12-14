@@ -5,8 +5,9 @@ from werkzeug.exceptions import NotFound, BadRequest, Forbidden
 
 from project import app
 from project.auth.shortcuts import only_authorized
-from project.tasks.actions import assign_task, complete_task, add_task
-from project.utils import qb
+from project.utils.pagination import paginate_by_pk
+from .actions import assign_task, complete_task, add_task
+from .lists import build_authored, build_unassigned, build_assigned
 from .models import select_tasks
 
 
@@ -44,21 +45,11 @@ def tasks_create():
 @app.route('/tasks/unassigned/', methods=['GET'])
 @only_authorized
 def tasks_list_unassigned():
-    last_id = request.args.get('last_id', -1, int)
+    last_id = request.args.get('last_id', None, int)
     limit = min(request.args.get('limit', 20, int), 1000)
 
-    q = qb.make('select')
-    qb.add_ordering(q, ('id', 'DESC'))
-
-    if last_id > 0:
-        qb.add_where(q, 'id < {last_id}', {
-            'last_id': last_id
-        })
-    qb.set_limit(q, limit)
-
-    qb.add_where(q, 'employee_id IS NULL')
-    qb.add_where(q, 'status = "open"')
-
+    q = build_unassigned()
+    paginate_by_pk(q, last_id, limit)
     tasks = select_tasks(q)
 
     return jsonify(list(tasks))
@@ -67,23 +58,11 @@ def tasks_list_unassigned():
 @app.route('/tasks/assigned/', methods=['GET'])
 @only_authorized
 def tasks_list_assigned():
-    last_id = request.args.get('last_id', -1, int)
+    last_id = request.args.get('last_id', None, int)
     limit = min(request.args.get('limit', 20, int), 1000)
 
-    q = qb.make('select')
-    qb.add_ordering(q, ('id', 'DESC'))
-
-    if last_id > 0:
-        qb.add_where(q, 'id < {last_id}', {
-            'last_id': last_id
-        })
-    qb.set_limit(q, limit)
-
-    qb.add_where(q, 'employee_id = {user_id}', {
-        'user_id': request.user_id
-    })
-    qb.add_where(q, 'status = "open"')
-
+    q = build_assigned(request.user_id)
+    paginate_by_pk(q, last_id, limit)
     tasks = select_tasks(q)
 
     return jsonify(list(tasks))
@@ -92,22 +71,11 @@ def tasks_list_assigned():
 @app.route('/tasks/authored/', methods=['GET'])
 @only_authorized
 def tasks_list_authored():
-    last_id = request.args.get('last_id', -1, int)
+    last_id = request.args.get('last_id', None, int)
     limit = min(request.args.get('limit', 20, int), 1000)
 
-    q = qb.make('select')
-    qb.add_ordering(q, ('id', 'DESC'))
-
-    if last_id > 0:
-        qb.add_where(q, 'id < {last_id}', {
-            'last_id': last_id
-        })
-    qb.set_limit(q, limit)
-
-    qb.add_where(q, 'author_id = {user_id}', {
-        'user_id': request.user_id
-    })
-    qb.add_where(q, 'status = "open"')
+    q = build_authored(request.user_id)
+    paginate_by_pk(q, last_id, limit)
 
     tasks = select_tasks(q)
 
