@@ -16,4 +16,6 @@ DATABASE_URL = os.environ.get(
     'sqlite://db.sqlite3'
 )
 
+SYSTEM_COMMISSION = 0.05  # 5%
+
 ACCESS_CONTROL_ALLOW_ORIGIN = os.environ.get('ACCESS_CONTROL_ALLOW_ORIGIN')

@@ -1,6 +1,5 @@
-from project.transactions.models import make_transaction, create_transaction
-from project.users.models import get_user_by_id, increase_user_amount, \
-    decrease_user_amount
+from project.system.models import pay_user_for_task, charge_author_for_task
+from project.users.models import get_user_by_id
 from project.utils import qb
 from .models import get_task_by_id, update_tasks, make_task, create_task
 
@@ -19,15 +18,7 @@ def add_task(name, author_id, price, description):
         status='open',
     ))
 
-    transaction = make_transaction(
-        user_id=author_id,
-        task_id=task['id'],
-        amount=-task['price']
-    )
-
-    create_transaction(transaction)
-
-    decrease_user_amount(author_id, task['price'])
+    charge_author_for_task(author_id, task)
 
     return task
 
@@ -82,11 +73,4 @@ def complete_task(task_id, user_id):
     if c == 0:
         raise PermissionError("Already done.")
 
-    transaction = make_transaction(
-        user_id=user_id,
-        task_id=task_id,
-        amount=task['price']
-    )
-
-    create_transaction(transaction)
-    increase_user_amount(user_id, task['price'])
+    pay_user_for_task(user_id, task)
