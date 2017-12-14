@@ -82,7 +82,7 @@ export default class TaskList extends React.Component {
         renderItem={item => (
           <List.Item
             key={item.name}
-            actions={[
+            actions={this.props.mode !== 'readonly' && [
               item.employee_id ? (
                 <Button type="primary">Done</Button>
               ) : (

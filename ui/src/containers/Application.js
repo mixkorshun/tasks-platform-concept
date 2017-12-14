@@ -1,13 +1,18 @@
 import React from 'react';
 import { Route, Switch, withRouter } from 'react-router-dom';
-import LoginPage from './LoginPage';
-import IndexPage from './IndexPage';
+
+import LoginPage from './Authorization/LoginPage';
+import RegistrationPage from './Authorization/RegistrationPage';
+
+import EmployeeIndexPage from './Employee/IndexPage';
+import EmployerIndexPage from './Employer/IndexPage';
+import EmployerAddTaskPage from './Employer/AddTaskPage';
+
 import Cookies from 'universal-cookie';
 import { request } from '../utils';
 import { message } from 'antd';
 import AuthorizedLayout from '../components/AuthorizedLayout';
 import EnsureLoggedIn from '../components/EnsureLoggedIn';
-import RegistrationPage from './RegistrationPage';
 
 const cookies = new Cookies();
 
@@ -29,7 +34,7 @@ class Application extends React.Component {
     cookies.set('sessionId', token, { path: '/' });
 
     this.setState({
-      token: token
+      token: token,
     });
 
     this.loadUserProfile();
@@ -98,12 +103,34 @@ class Application extends React.Component {
             user={this.state.user}
             onLogout={this.handleLogout}
           >
-            <Route path="/">
-              <IndexPage
-                authorization={this.state.token}
-                user={this.state.user}
-              />
-            </Route>
+            {this.state.user && this.state.user.type === 'employee' && (
+              <Switch>
+                <Route exact path="/">
+                  <EmployeeIndexPage
+                    authorization={this.state.token}
+                    user={this.state.user}
+                  />
+                </Route>
+              </Switch>
+            )}
+
+            {this.state.user && this.state.user.type === 'employer' && (
+              <Switch>
+                <Route exact path="/">
+                  <EmployerIndexPage
+                    authorization={this.state.token}
+                    user={this.state.user}
+                  />
+                </Route>
+
+                <Route exact path="/add_task/">
+                  <EmployerAddTaskPage
+                    authorization={this.state.token}
+                    user={this.state.user}
+                  />
+                </Route>
+              </Switch>
+            )}
           </AuthorizedLayout>
         </EnsureLoggedIn>
       </Switch>

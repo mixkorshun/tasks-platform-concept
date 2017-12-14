@@ -1,6 +1,6 @@
 import React from 'react';
 import { Col, Layout, message, Row } from 'antd';
-import RegistrationForm from '../components/RegistrationForm';
+import RegistrationForm from '../../components/RegistrationForm';
 import { Link, withRouter } from 'react-router-dom';
 
 class RegistrationPage extends React.Component {

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Col, Layout, Row } from 'antd';
-import LoginForm from '../components/LoginForm';
+import LoginForm from '../../components/LoginForm';
 import { Link, withRouter } from 'react-router-dom';
 
 class LoginPage extends React.Component {
