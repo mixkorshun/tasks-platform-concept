@@ -3,6 +3,17 @@ import TaskList from '../../components/Tasks/TaskList';
 import { Tabs } from 'antd';
 
 export default class IndexPage extends React.Component {
+  setupAssignedRefreshCallback = (cb) => {
+    this.assignedRefreshCallback = cb;
+  };
+
+  handleAssign = () => {
+    this.assignedRefreshCallback && this.assignedRefreshCallback();
+  };
+
+  handleDone = () => {
+    this.props.onUserChanged && this.props.onUserChanged();
+  };
 
   render() {
     return (
@@ -17,16 +28,18 @@ export default class IndexPage extends React.Component {
             authorization={this.props.authorization}
             taskAction="assign"
             taskActionLabel="Assign"
+            onTaskAction={this.handleAssign}
           />
         </Tabs.TabPane>
         <Tabs.TabPane tab="My tasks" key="my">
           <TaskList
             feedUrl="/tasks/assigned/"
-            autoreload={60000}
             forUser={this.props.user}
             authorization={this.props.authorization}
             taskAction="complete"
             taskActionLabel="Done"
+            setupRefreshCallback={this.setupAssignedRefreshCallback}
+            onTaskAction={this.handleDone}
           />
         </Tabs.TabPane>
       </Tabs>

@@ -14,6 +14,8 @@ export default class TaskList extends React.Component {
       tasks: [],
       hasMore: false,
     };
+
+    this.props.setupRefreshCallback && this.props.setupRefreshCallback(this.handleRefresh);
   }
 
   handleTaskAction = async (item, index) => {
@@ -52,6 +54,8 @@ export default class TaskList extends React.Component {
     this.setState({
       tasks: tasks,
     });
+
+    this.props.onTaskAction && this.props.onTaskAction(item);
   };
 
   componentDidMount() {
@@ -164,7 +168,8 @@ export default class TaskList extends React.Component {
               description={item.description}
             />
 
-            <div style={{ marginLeft: '50px', fontWeight: 600 }}>${item.price}</div>
+            <div style={{ marginLeft: '50px', fontWeight: 600 }}>
+              ${item.price}</div>
           </List.Item>
         )}
       />

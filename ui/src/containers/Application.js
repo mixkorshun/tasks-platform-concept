@@ -40,6 +40,10 @@ class Application extends React.Component {
     this.loadUserProfile();
   };
 
+  handleUserChanged = () => {
+    this.loadUserProfile();
+  };
+
   handleLogout = () => {
     cookies.remove('sessionId');
 
@@ -109,6 +113,7 @@ class Application extends React.Component {
                   <EmployeeIndexPage
                     authorization={this.state.token}
                     user={this.state.user}
+                    onUserChanged={this.handleUserChanged}
                   />
                 </Route>
               </Switch>
@@ -120,6 +125,7 @@ class Application extends React.Component {
                   <EmployerIndexPage
                     authorization={this.state.token}
                     user={this.state.user}
+                    onUserChanged={this.handleUserChanged}
                   />
                 </Route>
 
@@ -127,6 +133,7 @@ class Application extends React.Component {
                   <EmployerAddTaskPage
                     authorization={this.state.token}
                     user={this.state.user}
+                    onUserChanged={this.handleUserChanged}
                   />
                 </Route>
               </Switch>

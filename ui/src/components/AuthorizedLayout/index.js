@@ -47,12 +47,19 @@ export default class AuthorizedLayout extends React.Component {
           <div
             style={{
               float: 'right',
+              display: 'flex',
               color: '#fff',
               margin: 0,
               height: '63px',
             }}
           >
-            {this.props.user ? this.props.user.email : ''}
+            <div style={{ margin: '0 10px' }}>{this.props.user ? this.props.user.email : ''}</div>
+            <div
+              style={{
+                margin: '0 10px',
+                fontWeight: 'bold',
+              }}
+            >{this.props.user ? '$' + this.props.user.balance : ''}</div>
           </div>
         </Header>
         <Layout>
