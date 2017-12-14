@@ -16,12 +16,26 @@ export default class TaskList extends React.Component {
 
   componentDidMount() {
     this.loadTasks();
+
+    if (this.props.autoreload) {
+      this.loader = setInterval(() => {
+        this.loadTasks(false);
+      }, this.props.autoreload);
+    }
   };
 
-  loadTasks = async () => {
-    this.setState({
-      loading: true,
-    });
+  componentWillUnmount() {
+    if (this.loader) {
+      clearInterval(this.loader);
+    }
+  }
+
+  loadTasks = async (useLoading = true) => {
+    if (useLoading) {
+      this.setState({
+        loading: true,
+      });
+    }
 
     let resp = null;
 

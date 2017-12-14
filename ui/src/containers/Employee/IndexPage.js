@@ -18,6 +18,7 @@ export default class IndexPage extends React.Component {
           >
             <TaskList
               feedUrl="/tasks/unassigned/"
+              autoreload={60000}
               forUser={this.props.user}
               authorization={this.props.authorization}
             />
@@ -36,6 +37,7 @@ export default class IndexPage extends React.Component {
           >
             <TaskList
               feedUrl="/tasks/assigned/"
+              autoreload={60000}
               forUser={this.props.user}
               authorization={this.props.authorization}
             />
