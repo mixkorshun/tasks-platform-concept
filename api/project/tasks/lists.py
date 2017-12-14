@@ -32,4 +32,4 @@ def build_authored(author_id):
     })
     qb.add_where(q, 'status = "open"')
 
-    return qb
+    return q
