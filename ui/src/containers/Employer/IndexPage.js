@@ -13,7 +13,7 @@ class IndexPage extends React.Component {
     return (
       <Row>
 
-        <Col offset={1} span={15}>
+        <Col offset={7} span={10}>
           <div style={{ background: '#fff', padding: 24 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
               <h1>My tasks</h1>
