@@ -79,6 +79,7 @@ def update_tasks(query):
 
     cursor = conn.cursor()
     cursor.execute(database.prepare_query(conn, query), params)
+    conn.commit()
 
     return cursor.rowcount
 
@@ -98,6 +99,7 @@ def update_task(task):
     cursor = conn.cursor()
     sql, params = qb.to_sql(q)
     cursor.execute(database.prepare_query(conn, sql), params)
+    conn.commit()
 
     if not cursor.rowcount:
         raise RuntimeError('No tasks updated.')
@@ -122,6 +124,7 @@ def create_task(task):
     cursor = conn.cursor()
     sql, params = qb.to_sql(q)
     cursor.execute(database.prepare_query(conn, sql), params)
+    conn.commit()
 
     if not cursor.rowcount:
         raise RuntimeError('No tasks created.')

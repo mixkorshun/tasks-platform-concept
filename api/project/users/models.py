@@ -74,6 +74,7 @@ def update_user(user):
     cursor = conn.cursor()
     sql, params = qb.to_sql(q)
     cursor.execute(database.prepare_query(conn, sql), params)
+    conn.commit()
 
     if not cursor.rowcount:
         raise RuntimeError('No users updated.')
@@ -99,6 +100,7 @@ def create_user(user):
 
     cursor = conn.cursor()
     cursor.execute(database.prepare_query(conn, sql), params)
+    conn.commit()
 
     if not cursor.rowcount:
         raise RuntimeError('No users created.')
