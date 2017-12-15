@@ -101,7 +101,7 @@ def test_complete_add_money(client, task, employee):
     task['employee_id'] = employee['id']
     update_task(task)
 
-    resp = client.post(url_for('tasks_complete', task_id=task['id']), headers=[
+    client.post(url_for('tasks_complete', task_id=task['id']), headers=[
         ('Authorization', 'Token ' + get_token(request, employee['id']))
     ])
 
