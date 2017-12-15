@@ -1,11 +1,16 @@
 import importlib
 import os
 import re
+from logging import getLogger
 from urllib.parse import urlparse
+
+import simplejson
 
 from . import settings
 
 connections = {}
+
+queryLogger = getLogger('platform.database.queries')
 
 
 def get_connection(name='default'):
@@ -70,6 +75,8 @@ def prepare_query(connection, sql):
 
 def execute(connection, query, params, commit=False):
     cursor = connection.cursor()
+
+    queryLogger.debug('%s %s' % (query, simplejson.dumps(params)))
     cursor.execute(prepare_query(connection, query), params or {})
 
     if commit:
