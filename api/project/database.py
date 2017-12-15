@@ -68,6 +68,16 @@ def prepare_query(connection, sql):
     })
 
 
+def execute(connection, query, params, commit=False):
+    cursor = connection.cursor()
+    cursor.execute(prepare_query(connection, query), params or {})
+
+    if commit:
+        connection.commit()
+
+    return cursor
+
+
 def migrate():
     for app_name in settings.INSTALLED_APPS:
         app_dir = os.path.dirname(importlib.import_module(app_name).__file__)

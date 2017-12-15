@@ -117,11 +117,5 @@ def create_user(user):
 
 
 def raw_query(sql, params=None, commit=False):
-    conn = database.get_connection()
-
-    cursor = conn.cursor()
-    cursor.execute(database.prepare_query(conn, sql), params or {})
-    if commit:
-        conn.commit()
-
-    return cursor
+    connection = database.get_connection()
+    return database.execute(connection, sql, params, commit)
