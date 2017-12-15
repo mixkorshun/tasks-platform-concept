@@ -67,6 +67,10 @@ def prepare_query(connection, sql):
 
     platform = get_platform_by_connection(connection)
 
+    # fix insert different insert ignore syntax in SQLite and MySQL
+    if platform.name == 'sqlite' and sql.startswith('INSERT IGNORE'):
+        sql = sql[:6] + ' OR ' + sql[6:]
+
     return sql.format(**{
         param: platform.format_param_name(param)
         for param in params
@@ -109,6 +113,9 @@ def migrate():
         cursor = connection.cursor()
         if os.path.exists(schema_filename):
             sql_script = open(schema_filename, 'r').read()
-            cursor.execute(sql_script)
+            if hasattr(cursor, 'executescript'):
+                cursor.executescript(sql_script)
+            else:
+                cursor.execute(sql_script)
 
         connection.commit()

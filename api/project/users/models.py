@@ -94,6 +94,7 @@ def decrease_user_amount(user_id, amount):
 
 def create_user(user):
     q = qb.make('insert', __table__)
+    qb.set_ignore_mode(q, True)
 
     qb.add_values(q, [
         (field, '{' + field + '}') for field in __fields__[1:]

@@ -15,7 +15,12 @@ def make(query_type='SELECT', table=None):
             'limit': None,
             'offset': None,
         })
-    elif query_type == 'UPDATE' or query_type == 'INSERT':
+    elif query_type == 'INSERT':
+        q.update({
+            'ignore': False,
+            'values': [],
+        })
+    elif query_type == 'UPDATE':
         q.update({
             'values': [],
         })
@@ -68,6 +73,10 @@ def add_values(q, values, params=None):
 
     if params:
         q['params'].update(params)
+
+
+def set_ignore_mode(q, mode=True):
+    q['ignore'] = mode
 
 
 def __build_cols(cols):
@@ -141,7 +150,8 @@ def to_sql(q):
     elif q['type'] == 'INSERT':
 
         sql = ' '.join(filter(bool, [
-            'INSERT INTO ' + q['table'],
+            'INSERT' + (' IGNORE' if q['ignore'] else ''),
+            'INTO ' + q['table'],
             __build_insert_cols(q['values']),
             __build_values(q['values']),
             __build_where(q['where'])

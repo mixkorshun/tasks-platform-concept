@@ -65,11 +65,14 @@ def users_register():
     except (KeyError, ValueError):
         raise BadRequest('Invalid form params.')
 
-    user = actions.register(
-        email=email,
-        password=password,
-        type=user_type
-    )
+    try:
+        user = actions.register(
+            email=email,
+            password=password,
+            type=user_type
+        )
+    except RuntimeError:
+        raise BadRequest('User with this email already registered.')
 
     del user['password']
 

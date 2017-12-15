@@ -4,5 +4,7 @@ CREATE TABLE users
   email    TEXT NOT NULL,
   password TEXT NOT NULL,
   type     TEXT NOT NULL,
-  balance   NUMERIC
+  balance  NUMERIC
 );
+CREATE UNIQUE INDEX email_unique
+  ON users (email);
