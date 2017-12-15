@@ -7,6 +7,7 @@ def build_unassigned():
 
     qb.add_where(q, 'employee_id IS NULL')
     qb.add_where(q, 'status = "open"')
+    qb.add_where(q, 'ok = 1')
 
     return q
 

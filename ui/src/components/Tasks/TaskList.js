@@ -162,6 +162,7 @@ export default class TaskList extends React.Component {
                 onClick={(e) => this.handleTaskAction(item, index)}
               >{this.props.taskActionLabel}</Button>,
             ]}
+            style={{ opacity: item.ok ? 1 : 0.3 }}
           >
             <List.Item.Meta
               title={item.name}

@@ -31,7 +31,7 @@ export default class IndexPage extends React.Component {
             onTaskAction={this.handleAssign}
           />
         </Tabs.TabPane>
-        <Tabs.TabPane tab="My tasks" key="my">
+        <Tabs.TabPane tab="In Progress" key="my">
           <TaskList
             feedUrl="/tasks/assigned/"
             forUser={this.props.user}

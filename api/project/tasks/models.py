@@ -9,7 +9,8 @@ __fields__ = (
     'name',
     'status',
     'price',
-    'description'
+    'description',
+    'ok'
 )
 
 
@@ -89,6 +90,13 @@ def update_task(task):
         raise RuntimeError('No tasks updated.')
 
     return task
+
+
+def mark_task_ok(task_id):
+    q = qb.make('update')
+    qb.add_values(q, [('ok', '1')])
+    qb.add_where(q, 'id = {id}', {'id': task_id})
+    update_tasks(q)
 
 
 def create_task(task):

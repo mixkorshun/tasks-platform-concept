@@ -38,7 +38,8 @@ def tasks_fixture(employer):
             'price': 300,
             'author_id': employer['id'],
             'description': '',
-            'status': 'open'
+            'status': 'open',
+            'ok': 1
         })))
 
     return tasks
@@ -81,3 +82,26 @@ def test_tasks_list_from_last_id(tasks, client, employee):
 
     for row in resp.json:
         assert row['id'] < 5
+
+
+def test_not_ok_task_is_hidden(client, employer, employee):
+    create_task(make_task(**{
+        'id': 1,
+        'name': 'Task',
+        'price': 300,
+        'author_id': employer['id'],
+        'description': '',
+        'status': 'open',
+        'ok': 0
+    }))
+
+    client.open()
+
+    resp = client.get(url_for('tasks_list_unassigned'),
+                      headers=[
+                          ('Authorization',
+                           'Token ' + get_token(request, employee['id']))
+                      ])
+
+    assert resp.status_code == 200
+    assert len(resp.json) == 0

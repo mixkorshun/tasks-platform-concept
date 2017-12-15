@@ -38,7 +38,8 @@ def task_fixture(employer):
         'price': 300,
         'author_id': employer['id'],
         'description': '',
-        'status': 'open'
+        'status': 'open',
+        'ok': 1
     }))
 
 

@@ -1,7 +1,8 @@
 from project.system.models import pay_user_for_task, charge_author_for_task
 from project.users.models import get_user_by_id
 from project.utils import qb, money_from_float
-from .models import get_task_by_id, update_tasks, make_task, create_task
+from .models import get_task_by_id, update_tasks, make_task, create_task, \
+    mark_task_ok
 
 
 def add_task(name, author_id, price, description):
@@ -16,9 +17,12 @@ def add_task(name, author_id, price, description):
 
         author_id=author_id,
         status='open',
+        ok=0
     ))
 
     charge_author_for_task(author_id, task)
+
+    mark_task_ok(task['id'])
 
     return task
 
@@ -39,7 +43,8 @@ def assign_task(task_id, user_id):
 
     qb.add_where(q, [
         'id = {id}',
-        'employee_id IS NULL OR employee_id = {user_id}'
+        'employee_id IS NULL',
+        'ok = 1'
     ], {'id': task_id, 'user_id': user_id})
 
     c = update_tasks(q)
@@ -61,11 +66,15 @@ def complete_task(task_id, user_id):
         raise PermissionError("Already done.")
 
     q = qb.make('update')
-    qb.add_values(q, [('status', '"done"')])
+    qb.add_values(q, [
+        ('status', '"done"'),
+        ('ok', 0)
+    ])
 
     qb.add_where(q, [
         'id = {id}',
-        'status = "open"'
+        'status = "open"',
+        'ok = 1'
     ], {'id': task_id})
 
     c = update_tasks(q)
@@ -74,3 +83,5 @@ def complete_task(task_id, user_id):
         raise PermissionError("Already done.")
 
     pay_user_for_task(user_id, task)
+
+    mark_task_ok(task_id)

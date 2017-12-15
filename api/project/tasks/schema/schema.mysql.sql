@@ -6,8 +6,9 @@ CREATE TABLE `tasks` (
   `status` varchar(11) NOT NULL,
   `price` decimal(10,2) NOT NULL,
   `description` tinytext NOT NULL,
+  `ok` tinyint(1) NOT NULL DEFAULT 1,
   `last_update` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
-  KEY `idx_employee_lists` (`employee_id`,`status`,`id`),
+  KEY `idx_employee_lists` (`employee_id`,`status`,`id`,`ok`),
   KEY `idx_employer_lists` (`author_id`,`status`,`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=151 DEFAULT CHARSET=utf8mb4;
