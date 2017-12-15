@@ -49,7 +49,8 @@ def register():
     user = create_user(make_user(
         email=email,
         password=encode_password(password),
-        type=user_type
+        type=user_type,
+        balance=0
     ))
 
     del user['password']
