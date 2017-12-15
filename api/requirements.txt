@@ -3,4 +3,4 @@ python-dotenv==0.7.1
 pyjwt==1.5.3
 simplejson==3.13.2
 faker==0.8.7
-
+pymemcache==1.4.3

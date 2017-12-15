@@ -21,7 +21,9 @@ def _get_connection():
             from libs.cache import memcached
 
             _module = memcached
-            _connection = _module.get_connection(cache_uri.netloc.split(','))
+            _connection = _module.get_connection(
+                cache_uri.hostname, cache_uri.port or 11211
+            )
         elif cache_uri.scheme == 'dummy':
             from libs.cache import dummy
 
