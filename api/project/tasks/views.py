@@ -1,11 +1,9 @@
-from decimal import Decimal
-
 from flask import request, jsonify
 from werkzeug.exceptions import NotFound, BadRequest, Forbidden
 
 from project import app
 from project.users.shortcuts import only_authorized
-from project.utils import get_post_data, validators as v
+from project.utils import get_post_data, validators as v, money_from_float
 from project.utils.pagination import paginate_by_pk
 from .actions import assign_task, complete_task, add_task
 from .lists import build_authored, build_unassigned, build_assigned
@@ -23,14 +21,14 @@ def tasks_create():
 
     try:
         v.required(data['name'])
-        v.type(v.required(data['price']), (int, float, Decimal))
+        v.type(v.required(data['price']), (int, float))
         v.greater_then(data['price'], 0)
     except ValueError:
         raise BadRequest(
             'Invalid form params.'
         )
 
-    data['price'] = Decimal.from_float(round(data['price'], 2))
+    data['price'] = money_from_float(data['price'])
 
     try:
         task = add_task(

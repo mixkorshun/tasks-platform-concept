@@ -3,6 +3,7 @@ from logging import getLogger
 
 from project import settings
 from project.transactions.actions import withdraw_money, charge_money
+from project.utils import money_from_float
 
 logger = getLogger('platform.system')
 
@@ -10,16 +11,16 @@ logger = getLogger('platform.system')
 def charge_author_for_task(user_id, task):
     withdraw_money(
         user_id,
-        task['price'],
+        money_from_float(task['price']),
         task['id']
     )
 
 
 def pay_user_for_task(user_id, task):
-    charge_money(
-        user_id,
-        str(task['price'] * Decimal(1 - settings.SYSTEM_COMMISSION)),
-        task['id']
+    system_earning = money_from_float(
+        task['price'] * Decimal.from_float(settings.SYSTEM_COMMISSION)
     )
 
-    logger.info('earn $%s' % task['price'])
+    charge_money(user_id, task['price'] - system_earning, task['id'])
+
+    logger.info('SYSTEM EARN: $%s' % system_earning)

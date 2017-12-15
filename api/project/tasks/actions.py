@@ -1,6 +1,6 @@
 from project.system.models import pay_user_for_task, charge_author_for_task
 from project.users.models import get_user_by_id
-from project.utils import qb
+from project.utils import qb, money_from_float
 from .models import get_task_by_id, update_tasks, make_task, create_task
 
 
@@ -12,7 +12,7 @@ def add_task(name, author_id, price, description):
     task = create_task(make_task(
         name=name,
         description=description,
-        price=price,
+        price=money_from_float(price),
 
         author_id=author_id,
         status='open',
