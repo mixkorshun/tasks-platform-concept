@@ -16,6 +16,11 @@ def setup():
     # noinspection PyUnresolvedReferences
     from . import errors  # noqa: F401
 
+    logging_config = getattr(settings, 'LOGGING')
+    from logging.config import dictConfig
+    if logging_config:
+        dictConfig(logging_config)
+
 
 app = Flask(__name__)
 
