@@ -8,7 +8,8 @@ __fields__ = (
     'id',
     'user_id',
     'task_id',
-    'amount'
+    'amount',
+    'commission',
 )
 
 
