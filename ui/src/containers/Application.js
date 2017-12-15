@@ -86,6 +86,8 @@ class Application extends React.Component {
       this.setState({
         user: data,
       });
+    } else if (response.status === 403) {
+      this.handleLogout();
     } else {
       message.error(data.error_message);
     }
