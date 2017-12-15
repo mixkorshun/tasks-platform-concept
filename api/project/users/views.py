@@ -31,7 +31,7 @@ def users_login():
     try:
         email = v.email(v.required(post_data['email']))
         password = v.required(post_data['password'])
-    except KeyError:
+    except (KeyError, ValueError):
         raise BadRequest(
             'Please provide email/password pair.'
         )
@@ -62,7 +62,7 @@ def users_register():
         email = v.email(v.required(post_data['email']))
         password = v.required(post_data['password'])
         user_type = v.choices(post_data['type'], ('employer', 'employee'))
-    except KeyError:
+    except (KeyError, ValueError):
         raise BadRequest('Invalid form params.')
 
     user = actions.register(
