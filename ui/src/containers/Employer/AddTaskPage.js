@@ -1,6 +1,6 @@
 import React from 'react';
 import AddTaskForm from '../../components/Tasks/AddTaskForm';
-import { withRouter } from 'react-router-dom';
+import { Link, withRouter } from 'react-router-dom';
 
 class AddTaskPage extends React.Component {
 
@@ -17,6 +17,8 @@ class AddTaskPage extends React.Component {
           onTaskAdd={this.onAddTask}
           authorization={this.props.authorization}
         />
+
+        <Link to="/">&lt; back to list</Link>
       </div>
     );
   }
