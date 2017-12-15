@@ -19,8 +19,8 @@ class RegistrationPage extends React.Component {
   render() {
     return (
       <Layout style={{ height: '100%' }}>
-        <Row>
-          <Col span={8} offset={8}>
+        <Row type="flex" justify="center">
+          <Col span={6} style={{ minWidth: 300 }}>
             <h1 style={{ textAlign: 'center', margin: '50px 0' }}>Sign Up</h1>
 
             <RegistrationForm onRegister={this.onRegister} />
