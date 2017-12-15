@@ -40,11 +40,18 @@ def get_connection(name='default'):
 
 
 def get_platform_by_connection(connection):
-    from libs.database import sqlite, mysql
-    return {
-        'sqlite3': sqlite,
-        'MySQLdb.connections': mysql
-    }.get(type(connection).__module__)
+    from libs.database import sqlite
+    platforms = {'sqlite3': sqlite}
+
+    try:
+        from libs.database import mysql
+
+        # noinspection PyTypeChecker
+        platforms.update({'MySQLdb.connections': mysql})
+    except ImportError:
+        pass
+
+    return platforms.get(type(connection).__module__)
 
 
 param_regex = re.compile('\{([^\}]+)\}')
