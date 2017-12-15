@@ -35,17 +35,17 @@ export default class TaskList extends React.Component {
       );
     }
 
+    if (Math.round(resp.status / 100) * 100 === 500) {
+      message.error(
+        'Server Temporary Unavailable. ' +
+        'Please try again in several minutes.',
+      );
+    }
+
     let result = await resp.json();
 
     if (!resp.ok) {
-      if (Math.round(resp.status / 100) * 100 === 500) {
-        message.error(
-          'Server Temporary Unavailable. ' +
-          'Please try again in several minutes.',
-        );
-      } else {
-        message.error(result.error_message);
-      }
+      message.error(result.error_message);
     }
 
     let tasks = this.state.tasks;
