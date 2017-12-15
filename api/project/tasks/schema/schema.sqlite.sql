@@ -6,5 +6,6 @@ CREATE TABLE tasks
   name        TEXT    NOT NULL,
   status      TEXT    NOT NULL DEFAULT 'open',
   price       NUMERIC NULL,
-  description TEXT    NOT NULL DEFAULT ''
+  description TEXT    NOT NULL DEFAULT '',
+  last_update TIMESTAMP        DEFAULT CURRENT_TIMESTAMP
 );
