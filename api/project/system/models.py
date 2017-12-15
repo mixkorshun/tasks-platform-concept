@@ -1,3 +1,4 @@
+from decimal import Decimal
 from logging import getLogger
 
 from project import settings
@@ -17,7 +18,7 @@ def charge_author_for_task(user_id, task):
 def pay_user_for_task(user_id, task):
     charge_money(
         user_id,
-        float(task['price']) * (1 - settings.SYSTEM_COMMISSION),
+        str(task['price'] * Decimal(1 - settings.SYSTEM_COMMISSION)),
         task['id']
     )
 

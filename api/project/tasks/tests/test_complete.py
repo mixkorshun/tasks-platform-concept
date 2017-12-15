@@ -1,9 +1,10 @@
 import pytest
 from flask import url_for, request
 
+from project import settings
 from project.tasks.models import create_task, make_task, get_task_by_id, \
     update_task
-from project.users.models import create_user
+from project.users.models import create_user, get_user_by_id
 from project.users.tokens import get_token
 
 
@@ -92,3 +93,18 @@ def test_cannot_complete_already_done_task(client, task, employee):
         ('Authorization', 'Token ' + get_token(request, employee['id']))
     ])
     assert resp.status_code == 403
+
+
+def test_complete_add_money(client, task, employee):
+    client.open()
+
+    task['employee_id'] = employee['id']
+    update_task(task)
+
+    resp = client.post(url_for('tasks_complete', task_id=task['id']), headers=[
+        ('Authorization', 'Token ' + get_token(request, employee['id']))
+    ])
+
+    employee = get_user_by_id(employee['id'])
+
+    assert employee['balance'] == 300 * (1 - settings.SYSTEM_COMMISSION)
