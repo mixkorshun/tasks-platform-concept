@@ -12,7 +12,7 @@ class RegistrationForm extends React.Component {
         let resp = null;
 
         try {
-          resp = await request('/register/', {
+          resp = await request('/users/register/', {
             method: 'POST',
             body: JSON.stringify({
               email: values.email,

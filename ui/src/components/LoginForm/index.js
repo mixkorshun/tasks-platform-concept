@@ -12,7 +12,7 @@ class LoginForm extends React.Component {
 
         let resp;
         try {
-          resp = await request('/authorize/', {
+          resp = await request('/users/login/', {
             method: 'POST',
             body: JSON.stringify({
               email: values.email,
