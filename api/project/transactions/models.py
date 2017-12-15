@@ -33,10 +33,7 @@ def select_transactions(query):
     else:
         query, params = query, {}
 
-    conn = database.get_connection()
-
-    cursor = conn.cursor()
-    cursor.execute(database.prepare_query(conn, query), params)
+    cursor = raw_query(query, params)
 
     while True:
         row = cursor.fetchone()
@@ -59,12 +56,7 @@ def create_transaction(task):
 
     qb.add_params(q, task)
 
-    conn = database.get_connection()
-
-    cursor = conn.cursor()
-    sql, params = qb.to_sql(q)
-    cursor.execute(database.prepare_query(conn, sql), params)
-    conn.commit()
+    cursor = raw_query(*qb.to_sql(q), commit=True)
 
     if not cursor.rowcount:
         raise RuntimeError('No transaction created.')
@@ -72,3 +64,14 @@ def create_transaction(task):
     task[__fields__[0]] = cursor.lastrowid
 
     return task
+
+
+def raw_query(sql, params=None, commit=False):
+    conn = database.get_connection()
+
+    cursor = conn.cursor()
+    cursor.execute(database.prepare_query(conn, sql), params or {})
+    if commit:
+        conn.commit()
+
+    return cursor

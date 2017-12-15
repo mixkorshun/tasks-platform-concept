@@ -34,11 +34,7 @@ def get_user_by_credentials(email, password):
     })
     qb.set_limit(q, 1)
 
-    conn = database.get_connection()
-
-    cursor = conn.cursor()
-    sql, params = qb.to_sql(q)
-    cursor.execute(database.prepare_query(conn, sql), params)
+    cursor = raw_query(*qb.to_sql(q))
 
     user = make_user_from_row(cursor.fetchone())
 
@@ -59,11 +55,7 @@ def get_user_by_id(user_id):
         __fields__[0]: user_id
     })
 
-    conn = database.get_connection()
-
-    cursor = conn.cursor()
-    sql, params = qb.to_sql(q)
-    cursor.execute(database.prepare_query(conn, sql), params)
+    cursor = raw_query(*qb.to_sql(q))
 
     user = make_user_from_row(cursor.fetchone())
 
@@ -81,12 +73,7 @@ def increase_user_amount(user_id, amount):
         'pk': user_id
     })
 
-    conn = database.get_connection()
-
-    cursor = conn.cursor()
-    sql, params = qb.to_sql(q)
-    cursor.execute(database.prepare_query(conn, sql), params)
-    conn.commit()
+    raw_query(*qb.to_sql(q), commit=True)
 
     cache.delete(__cache_key__ % user_id)
 
@@ -100,12 +87,7 @@ def decrease_user_amount(user_id, amount):
         'pk': user_id
     })
 
-    conn = database.get_connection()
-
-    cursor = conn.cursor()
-    sql, params = qb.to_sql(q)
-    cursor.execute(database.prepare_query(conn, sql), params)
-    conn.commit()
+    raw_query(*qb.to_sql(q), commit=True)
 
     cache.delete(__cache_key__ % user_id)
 
@@ -122,13 +104,7 @@ def create_user(user):
 
     qb.add_params(q, user)
 
-    sql, params = qb.to_sql(q)
-
-    conn = database.get_connection()
-
-    cursor = conn.cursor()
-    cursor.execute(database.prepare_query(conn, sql), params)
-    conn.commit()
+    cursor = raw_query(*qb.to_sql(q), commit=True)
 
     if not cursor.rowcount:
         raise RuntimeError('No users created.')
@@ -138,3 +114,14 @@ def create_user(user):
     cache.store(__cache_key__ % user['id'], user, __cache_ttl__)
 
     return user
+
+
+def raw_query(sql, params=None, commit=False):
+    conn = database.get_connection()
+
+    cursor = conn.cursor()
+    cursor.execute(database.prepare_query(conn, sql), params or {})
+    if commit:
+        conn.commit()
+
+    return cursor

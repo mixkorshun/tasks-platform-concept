@@ -34,11 +34,7 @@ def get_task_by_id(task_id):
         __fields__[0]: task_id
     })
 
-    conn = database.get_connection()
-
-    cursor = conn.cursor()
-    sql, params = qb.to_sql(q)
-    cursor.execute(database.prepare_query(conn, sql), params)
+    cursor = raw_query(*qb.to_sql(q))
 
     return make_task_from_row(cursor.fetchone())
 
@@ -52,10 +48,7 @@ def select_tasks(query):
     else:
         query, params = query, {}
 
-    conn = database.get_connection()
-
-    cursor = conn.cursor()
-    cursor.execute(database.prepare_query(conn, query), params)
+    cursor = raw_query(query, params)
 
     while True:
         row = cursor.fetchone()
@@ -75,11 +68,7 @@ def update_tasks(query):
     else:
         query, params = query, {}
 
-    conn = database.get_connection()
-
-    cursor = conn.cursor()
-    cursor.execute(database.prepare_query(conn, query), params)
-    conn.commit()
+    cursor = raw_query(query, params)
 
     return cursor.rowcount
 
@@ -94,12 +83,7 @@ def update_task(task):
     })
     qb.add_params(q, task)
 
-    conn = database.get_connection()
-
-    cursor = conn.cursor()
-    sql, params = qb.to_sql(q)
-    cursor.execute(database.prepare_query(conn, sql), params)
-    conn.commit()
+    cursor = raw_query(*qb.to_sql(q), commit=True)
 
     if not cursor.rowcount:
         raise RuntimeError('No tasks updated.')
@@ -119,12 +103,7 @@ def create_task(task):
 
     qb.add_params(q, task)
 
-    conn = database.get_connection()
-
-    cursor = conn.cursor()
-    sql, params = qb.to_sql(q)
-    cursor.execute(database.prepare_query(conn, sql), params)
-    conn.commit()
+    cursor = raw_query(*qb.to_sql(q), commit=True)
 
     if not cursor.rowcount:
         raise RuntimeError('No tasks created.')
@@ -132,3 +111,14 @@ def create_task(task):
     task[__fields__[0]] = cursor.lastrowid
 
     return task
+
+
+def raw_query(sql, params=None, commit=False):
+    conn = database.get_connection()
+
+    cursor = conn.cursor()
+    cursor.execute(database.prepare_query(conn, sql), params or {})
+    if commit:
+        conn.commit()
+
+    return cursor
