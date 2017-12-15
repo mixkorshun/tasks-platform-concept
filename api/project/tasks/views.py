@@ -1,9 +1,10 @@
 from decimal import Decimal
+
 from flask import request, jsonify
 from werkzeug.exceptions import NotFound, BadRequest, Forbidden
 
 from project import app
-from project.auth.shortcuts import only_authorized
+from project.users.shortcuts import only_authorized
 from project.utils import get_post_data, validators as v
 from project.utils.pagination import paginate_by_pk
 from .actions import assign_task, complete_task, add_task

@@ -1,8 +1,8 @@
 import pytest
 from flask import url_for, request
 
-from project.auth.tokens import get_token
 from project.users.models import create_user
+from project.users.tokens import get_token
 from ..models import create_task, make_task
 
 

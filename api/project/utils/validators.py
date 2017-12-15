@@ -21,7 +21,7 @@ def email(value):
     if not email_re.match(value):
         raise ValueError(msg)
 
-    return email
+    return value
 
 
 def required(value):

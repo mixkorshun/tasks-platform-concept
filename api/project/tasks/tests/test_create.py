@@ -3,7 +3,7 @@ import json
 import pytest
 from flask import url_for, request
 
-from project.auth import tokens
+from project.users import tokens
 from project.users.models import create_user
 
 

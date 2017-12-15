@@ -12,7 +12,7 @@ from .. import tokens
 def fixture_user():
     return create_user({
         'id': 1,
-        'email': 'one@localhost',
+        'email': 'one@platform.loc',
         'password': encode_password('qwerty'),
         'type': 'employee',
         'balance': 0,
@@ -21,7 +21,7 @@ def fixture_user():
 
 def test_correct_login(user, client):
     resp = client.post(
-        url_for('authorize'),
+        url_for('users_login'),
         data=json.dumps({
             'email': user['email'],
             'password': 'qwerty'
@@ -34,9 +34,9 @@ def test_correct_login(user, client):
 
 def test_incorrect_login(user, client):
     resp = client.post(
-        url_for('authorize'),
+        url_for('users_login'),
         data=json.dumps({
-            'email': 'missing@localhost',
+            'email': 'missing@platform.loc',
             'password': 'qwerty'
         })
     )
@@ -47,7 +47,7 @@ def test_incorrect_login(user, client):
 
 def test_incorrect_password(user, client):
     resp = client.post(
-        url_for('authorize'),
+        url_for('users_login'),
         data=json.dumps({
             'email': user['email'],
             'password': 'qwerty1234'
