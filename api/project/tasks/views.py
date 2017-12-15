@@ -24,10 +24,13 @@ def tasks_create():
     try:
         v.required(data['name'])
         v.type(v.required(data['price']), (int, float, Decimal))
+        v.greater_then(data['price'], 0)
     except ValueError:
         raise BadRequest(
             'Invalid form params.'
         )
+
+    data['price'] = Decimal.from_float(round(data['price'], 2))
 
     try:
         task = add_task(

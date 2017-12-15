@@ -46,3 +46,12 @@ def choices(value, ch):
             '%s is not %s' % (value, str(ch))
         )
     return value
+
+
+def greater_then(value, v2):
+    if value <= v2:
+        raise ValueError(
+            'Value should be greater then %s' % v2
+        )
+
+    return value
