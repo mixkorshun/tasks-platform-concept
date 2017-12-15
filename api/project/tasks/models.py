@@ -1,6 +1,7 @@
 from project import database
 from project.utils import qb
 
+__connection__ = 'default'
 __table__ = 'tasks'
 
 __fields__ = (
@@ -122,5 +123,5 @@ def create_task(task):
 
 
 def raw_query(sql, params=None, commit=False):
-    connection = database.get_connection()
+    connection = database.get_connection(__connection__)
     return database.execute(connection, sql, params, commit)

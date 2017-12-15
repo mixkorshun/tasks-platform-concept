@@ -2,6 +2,7 @@ from project import database, cache
 from project.utils import qb
 from .password import check_password
 
+__connection__ = 'default'
 __table__ = 'users'
 
 __fields__ = ('id', 'email', 'password', 'type', 'balance')
@@ -118,5 +119,5 @@ def create_user(user):
 
 
 def raw_query(sql, params=None, commit=False):
-    connection = database.get_connection()
+    connection = database.get_connection(__connection__)
     return database.execute(connection, sql, params, commit)
