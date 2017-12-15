@@ -21,7 +21,7 @@ def generate_fake_data():
         balance=100000
     ))
 
-    employee = create_user(make_user(
+    create_user(make_user(
         email='employee@platform.loc',
         password=encode_password('qwerty'),
         type='employee',
@@ -37,16 +37,6 @@ def generate_fake_data():
             description=fake.text(),
             author_id=employer['id'],
         )
-
-    for i in range(100):
-        task = actions.add_task(
-            name=fake.sentence(),
-            price=fake.pydecimal(3, 2, True),
-            description=fake.text(),
-            author_id=employer['id'],
-        )
-
-        actions.assign_task(task['id'], employee['id'])
 
 
 setup()
