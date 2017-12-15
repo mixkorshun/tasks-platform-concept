@@ -1,6 +1,10 @@
 import sqlite3
 
+from decimal import Decimal
+
 name = 'sqlite'
+
+sqlite3.register_adapter(Decimal, lambda x: str(x))
 
 
 def connect(database):
