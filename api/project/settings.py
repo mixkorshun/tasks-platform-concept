@@ -21,7 +21,7 @@ SYSTEM_COMMISSION = 0.05  # 5%
 
 ACCESS_CONTROL_ALLOW_ORIGIN = os.environ.get('ACCESS_CONTROL_ALLOW_ORIGIN')
 
-LOGGING  = {
+LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
     'handlers': {
