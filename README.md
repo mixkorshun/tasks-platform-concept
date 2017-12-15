@@ -4,6 +4,14 @@
 
 Simple task tracker platform.
 
+## Features
+ - RESTful backend API
+ - Environment-based application configuration
+ - Support SQLite and MySQL database engines
+ - No ORM
+ - Authentication using JWT tokens
+ - React SPA with ant.design UI kit
+
 ## Run application locally
 
 Clone git repository:
