@@ -7,6 +7,7 @@ from project import app
 from project.users.models import get_user_by_credentials, make_user, \
     create_user
 from project.users.password import encode_password
+from project.utils import validators as v
 from . import tokens
 from .errors import InvalidCredentials
 
@@ -16,8 +17,8 @@ def authorize():
     post_data = json.loads(request.data.decode())
 
     try:
-        email = post_data['email']
-        password = post_data['password']
+        email = v.email(v.required(post_data['email']))
+        password = v.required(post_data['password'])
     except KeyError:
         raise BadRequest(
             'Please provide email/password pair.'
@@ -40,11 +41,11 @@ def register():
     post_data = json.loads(request.data.decode())
 
     try:
-        email = post_data['email']
-        password = post_data['password']
-        user_type = post_data['type']
+        email = v.email(v.required(post_data['email']))
+        password = v.required(post_data['password'])
+        user_type = v.choices(post_data['type'], ('employer', 'employee'))
     except KeyError:
-        raise BadRequest('One or more required field are missed.')
+        raise BadRequest('Invalid form params.')
 
     user = create_user(make_user(
         email=email,

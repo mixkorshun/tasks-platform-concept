@@ -38,3 +38,11 @@ def type(value, t):
         )
 
     return value
+
+
+def choices(value, ch):
+    if value not in ch:
+        raise ValueError(
+            '%s is not %s' % (value, str(ch))
+        )
+    return value
