@@ -17,3 +17,7 @@ $ docker-compose up
 ```
 
 Application works at `http://127.0.0.1:9001/`.
+You can login to system using 2 sample users:
+
+ - `employee@platform.loc:qwerty` – employee account
+ - `employer@platform.loc:qwerty` – employer account
