@@ -1,5 +1,6 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const webpack = require('webpack');
 
 const isProduction = (process.env.NODE_ENV === 'production');
@@ -18,9 +19,11 @@ let config = {
     loaders: [
       {
         test: /\.css$/,
-        loader: 'style-loader!css-loader?sourceMap',
-      },
-      {
+        use: ExtractTextPlugin.extract(
+          { loader: 'css-loader', options: { minimize: isProduction } },
+          'style-loader',
+        ),
+      }, {
         test: /\.jsx?$/,
         loader: 'babel-loader',
         exclude: /node_modules/,
@@ -28,12 +31,12 @@ let config = {
           presets: ['react', 'es2015', 'es2017'],
           plugins: ['transform-class-properties'],
         },
-      },
-      {
+      }, {
         test: /\.(woff2?|eot|ttf|otf)(\?.*)?$/,
         loader: 'url-loader',
         options: {
           name: 'fonts/[name].[ext]',
+          limit: 4096,
         },
       },
     ],
@@ -48,6 +51,7 @@ let config = {
       'process.env': { NODE_ENV: JSON.stringify(process.env.NODE_ENV) },
       'api_endpoint': JSON.stringify(process.env.API_ENDPOINT || '/api'),
     }),
+    new ExtractTextPlugin("[name].bundle.[hash].css")
   ],
 };
 
