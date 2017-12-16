@@ -1,0 +1,12 @@
+[web]
+tasks-platform.info
+
+[database]
+tasks-platform.info
+
+[cache]
+tasks-platform.info
+
+[all:vars]
+vars_file = 'vars/production.yml'
+secrets_file = 'vars/production_secrets.yml'

@@ -1,0 +1,16 @@
+---
+- name: "MIGRATE"
+  hosts: web
+
+  remote_user: root
+  become: yes
+  become_method: su
+  become_user: deploy
+
+  vars_files:
+    - "{{ vars_file }}"
+    - "{{ secrets_file }}"
+
+  tasks:
+    - raw: 'cd {{ deploy_path }}/current/api && env/bin/python migrate.py'
+      run_once: true

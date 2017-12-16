@@ -1,0 +1,96 @@
+---
+- name: "DEPLOY"
+  hosts: web
+
+  remote_user: root
+  become: yes
+  become_method: su
+  become_user: deploy
+
+  vars_files:
+    - "{{ vars_file }}"
+    - "{{ secrets_file }}"
+
+  vars:
+    release: "{{ lookup('env','RELEASE') }}"
+    release_file: "{{ lookup('env','RELEASE_FILE') }}"
+
+    api_specific_files:
+      - '.env'
+      - 'gunicorn.conf'
+
+    api_extra_dependencies:
+      - 'gunicorn'
+      - 'gevent'
+      - 'mysqlclient'
+
+  tasks:
+    - deploy_helper:
+        path: '{{ deploy_path }}'
+        release: '{{ release }}'
+
+    - name: 'make release directory'
+      file:
+        path: '{{ deploy_helper.new_release_path }}'
+        state: 'directory'
+
+    - name: 'mark release as unfinished'
+      file:
+        path: '{{ deploy_helper.new_release_path }}/{{ deploy_helper.unfinished_filename }}'
+        state: touch
+
+    - name: 'upload release'
+      unarchive:
+        src: "{{ release_file }}"
+        dest: "{{ deploy_helper.new_release_path }}"
+
+
+    - name: 'write env-specific files'
+      template:
+        src: 'templates/project/api/{{ item }}'
+        dest: '{{ deploy_helper.new_release_path }}/api/{{ item }}'
+      with_items: '{{ api_specific_files }}'
+
+    - name: 'install project-api dependencies'
+      pip:
+        virtualenv: '{{ deploy_helper.new_release_path }}/api/env'
+        virtualenv_python: 'python3'
+
+        requirements: '{{ deploy_helper.new_release_path }}/api/requirements.txt'
+
+    - name: 'install extra project-api dependencies'
+      pip:
+        virtualenv: '{{ deploy_helper.new_release_path }}/api/env'
+        virtualenv_python: 'python3'
+
+        name: '{{ item }}'
+      with_items: '{{ api_extra_dependencies }}'
+
+
+- name: "SWITCH"
+  hosts: web
+  serial: 1
+
+  remote_user: root
+  become: yes
+  become_method: su
+  become_user: deploy
+
+  vars_files:
+    - "{{ vars_file }}"
+    - "{{ secrets_file }}"
+
+  vars:
+    release: "{{ lookup('env','RELEASE') }}"
+
+  tasks:
+    - name: 'finalize the deployment'
+      deploy_helper:
+        path: '{{ deploy_path }}'
+        release: '{{ release }}'
+        state: "finalize"
+
+    - name: 'reload program'
+      supervisorctl:
+        name: "webapp:"
+        state: restarted

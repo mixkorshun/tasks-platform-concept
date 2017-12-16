@@ -1,0 +1,154 @@
+---
+- name: 'SETUP APPLICATION'
+  hosts: web
+
+  remote_user: root
+  vars_files:
+    - "{{ vars_file }}"
+    - "{{ secrets_file }}"
+
+  tasks:
+    - group:
+        name: deploy
+
+    - user:
+        name: deploy
+        groups: deploy
+
+    - apt_key:
+        url: https://repo.mysql.com/RPM-GPG-KEY-mysql
+
+    - apt_repository:
+        repo: deb http://repo.mysql.com/apt/debian/ stretch mysql-5.7
+        state: present
+        filename: 'mysql57'
+
+    - apt:
+        update_cache: yes
+
+    - name: 'install required packages'
+      apt:
+        name: '{{ item }}'
+      with_items:
+        - 'python-virtualenv'
+        - 'python3'
+        - 'python3-pip'
+        - 'libmysqlclient-dev'
+        - 'supervisor'
+        - 'nginx'
+
+    - name: 'supervisor: configure'
+      template:
+        src: 'templates/supervisor/{{ item }}'
+        dest: '/etc/supervisor/{{ item }}'
+      with_items:
+        - 'supervisord.conf'
+        - 'conf.d/webapp.conf'
+      notify: 'supervisor: restart'
+
+    - name: 'https: configure'
+      copy:
+        dest: '/etc/ssl/{{ item.filename }}'
+        content: '{{ item.content }}'
+      with_items:
+        - filename: 'ssl_cert.crt'
+          content: '{{ ssl_cert }}'
+
+        - filename: 'ssl_cert.key'
+          content: '{{ ssl_cert_key }}'
+      when: https
+      notify: 'nginx: restart'
+
+    - name: 'nginx: configure'
+      template:
+        src: 'templates/nginx/{{ item }}'
+        dest: '/etc/nginx/{{ item }}'
+      with_items:
+        - 'nginx.conf'
+        - 'sites-enabled/default'
+      notify: 'nginx: restart'
+
+    - name: 'copy sysctl custom configuration'
+      template:
+        src: 'templates/sysctl.conf'
+        dest: '/etc/sysctl.d/custom.conf'
+      notify: 'sysctl: reload'
+
+    - name: 'create project root'
+      file:
+        path: '{{ deploy_path }}'
+        state: 'directory'
+        owner: deploy
+        group: deploy
+
+
+  handlers:
+    - name: 'sysctl: reload'
+      command: 'sysctl --system'
+
+    - name: 'supervisor: restart'
+      service:
+        name: 'supervisor'
+        state: 'restarted'
+
+    - name: 'nginx: restart'
+      service:
+        name: 'nginx'
+        state: 'restarted'
+
+
+- name: 'SETUP CACHE'
+  hosts: cache
+
+  remote_user: root
+
+  vars_files:
+    - "{{ vars_file }}"
+    - "{{ secrets_file }}"
+
+  tasks:
+    - name: 'install required packages'
+      apt:
+        name: '{{ item }}'
+      with_items:
+        - 'memcached'
+
+
+- name: 'SETUP DATABASE'
+  hosts: database
+
+  remote_user: root
+
+  vars_files:
+    - "{{ vars_file }}"
+    - "{{ secrets_file }}"
+
+  tasks:
+    - apt_key:
+        url: https://repo.mysql.com/RPM-GPG-KEY-mysql
+
+    - apt_repository:
+        repo: deb http://repo.mysql.com/apt/debian/ stretch mysql-5.7
+        state: present
+        filename: 'mysql57'
+
+    - apt:
+        update_cache: yes
+
+    - name: 'install required packages'
+      apt:
+        name: '{{ item }}'
+      with_items:
+        - 'python-mysqldb'
+        - 'mysql-server'
+
+    - name: 'add database user'
+      mysql_user:
+        name: '{{ db_user }}'
+        host: '{{ db_host }}'
+        password: '{{ db_password }}'
+        priv: '{{ db_name }}.*:ALL'
+
+    - name: 'add database'
+      mysql_db:
+        name: '{{ db_name }}'

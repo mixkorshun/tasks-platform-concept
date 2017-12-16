@@ -1,1 +1,4 @@
 /.idea
+provision/.cache
+provision/.vault_password
+provision/build.tar.gz

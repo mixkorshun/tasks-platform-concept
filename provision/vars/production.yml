@@ -1,0 +1,13 @@
+deploy_path: /app
+
+https: yes
+
+secret_key: ~ # look it in secrets file
+
+server_names:
+  - 'tasks-platform.info'
+
+db_host: '127.0.0.1'
+db_user: 'webapp'
+db_password: ~  # look it in secrets file
+db_name: 'tasks'
