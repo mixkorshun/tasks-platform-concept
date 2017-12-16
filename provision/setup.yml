@@ -47,6 +47,7 @@
       notify: 'supervisor: restart'
 
     - name: 'https: configure'
+      no_log: yes
       copy:
         dest: '/etc/ssl/{{ item.filename }}'
         content: '{{ item.content }}'
@@ -143,6 +144,7 @@
         - 'mysql-server'
 
     - name: 'add database user'
+      no_log: yes
       mysql_user:
         name: '{{ db_user }}'
         host: '{{ db_host }}'
@@ -150,5 +152,6 @@
         priv: '{{ db_name }}.*:ALL'
 
     - name: 'add database'
+      no_log: yes
       mysql_db:
         name: '{{ db_name }}'
