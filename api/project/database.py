@@ -15,7 +15,12 @@ queryLogger = getLogger('platform.database.queries')
 
 def get_connection(name='default'):
     if name in connections:
-        return connections[name]
+        conn = connections[name]
+
+        if hasattr(conn, 'ping'):
+            conn.ping(True)
+
+        return conn
 
     database_url = urlparse(settings.DATABASES[name])
 
